@@ -109,6 +109,9 @@ class PCFGDeterministicShuffle(PCFG):
 
     def sample_sentence(self, max_expansions, bracketing):
         sent = super().sample_sentence(max_expansions, bracketing)
+        if sent is None:
+            return None
+
         # Save current random state
         state = random.getstate()
 
@@ -132,6 +135,8 @@ class PCFGNonDeterministicShuffle(PCFG):
 
     def sample_sentence(self, max_expansions, bracketing):
         sent = super().sample_sentence(max_expansions, bracketing)
+        if sent is None:
+            return None
 
         tokens = sent.split(' ')
         eos = tokens.pop() if tokens[-1] == '[eos]' else None
@@ -150,6 +155,8 @@ class PCFGLocalShuffle(PCFG):
 
     def sample_sentence(self, max_expansions, bracketing):
         sent = super().sample_sentence(max_expansions, bracketing)
+        if sent is None:
+            return None
 
         tokens = sent.split(' ')
         eos = tokens.pop() if tokens[-1] == '[eos]' else None
@@ -178,6 +185,8 @@ class PCFGEvenOddShuffle(PCFG):
 
     def sample_sentence(self, max_expansions, bracketing):
         sent = super().sample_sentence(max_expansions, bracketing)
+        if sent is None:
+            return None
 
         tokens = sent.split(' ')
         eos = tokens.pop() if tokens[-1] == '[eos]' else None
