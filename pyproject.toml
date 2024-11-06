@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "impossible-inherent-entropy"
+version = "0.1.0"
+description = ""
+authors = ["agiats"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+tqdm = "^4.66.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
