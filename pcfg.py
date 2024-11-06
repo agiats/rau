@@ -1,5 +1,7 @@
 import random
 
+MARKER_REVERSE = "REVERSE"
+
 
 class PCFG:
     """
@@ -187,3 +189,73 @@ class PCFGEvenOddShuffle(PCFG):
         if eos:
             shuffled.append(eos)
         return ' '.join(shuffled)
+
+
+class PCFGNoReverse(PCFG):
+    def __init__(self, grammar_file):
+        super().__init__(grammar_file)
+
+    def sample_sentence(self, max_expansions, bracketing):
+        sent = super().sample_sentence(max_expansions, bracketing)
+        if sent is None:
+            return None
+        tokens = sent.split(' ')
+
+        # Remove and store [eos]
+        eos = tokens.pop() if tokens[-1] == '[eos]' else None
+
+        # Insert REVERSE marker at random position
+        insert_pos = random.randint(0, len(tokens))
+        tokens.insert(insert_pos, MARKER_REVERSE)
+
+        if eos:
+            tokens.append(eos)
+        return ' '.join(tokens)
+
+class PCFGPartialReverse(PCFG):
+    def __init__(self, grammar_file):
+        super().__init__(grammar_file)
+
+    def sample_sentence(self, max_expansions, bracketing):
+        sent = super().sample_sentence(max_expansions, bracketing)
+        if sent is None:
+            return None
+        tokens = sent.split(' ')
+
+        # Remove and store [eos]
+        eos = tokens.pop() if tokens[-1] == '[eos]' else None
+
+        # Insert REVERSE marker and reverse tokens after it
+        insert_pos = random.randint(0, len(tokens))
+        tokens.insert(insert_pos, MARKER_REVERSE)
+
+        # Reverse tokens after the marker
+        tokens[insert_pos+1:] = tokens[insert_pos+1:][::-1]
+
+        if eos:
+            tokens.append(eos)
+        return ' '.join(tokens)
+
+class PCFGFullReverse(PCFG):
+    def __init__(self, grammar_file):
+        super().__init__(grammar_file)
+
+    def sample_sentence(self, max_expansions, bracketing):
+        sent = super().sample_sentence(max_expansions, bracketing)
+        if sent is None:
+            return None
+        tokens = sent.split(' ')
+
+        # Remove and store [eos]
+        eos = tokens.pop() if tokens[-1] == '[eos]' else None
+
+        # Insert REVERSE marker at random position
+        insert_pos = random.randint(0, len(tokens))
+        tokens.insert(insert_pos, MARKER_REVERSE)
+
+        # Reverse all tokens
+        tokens = tokens[::-1]
+
+        if eos:
+            tokens.append(eos)
+        return ' '.join(tokens)
