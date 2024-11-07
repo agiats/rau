@@ -75,7 +75,6 @@ class PCFG:
                 if idx >= len(sent):
                     done = True
         if self.expansions > max_expansions:
-            print("Max expansions reached")
             return None
             # for idx in range(len(sent)):
             #     if not bracketing:
