@@ -1,7 +1,7 @@
-n_samples=10000000
-n_processes=15
+n_samples=100
+n_processes=14
 output_dir="results"
-output_name="10M_samples"
+output_name="100M_samples"
 max_expansions=400
 batch_size=50000
 grammar_classes=("PCFG" "PCFGDeterministicShuffle" "PCFGNonDeterministicShuffle" "PCFGLocalShuffle" "PCFGEvenOddShuffle" "PCFGNoReverse" "PCFGPartialReverse" "PCFGFullReverse")
@@ -11,6 +11,7 @@ grammar_file="data_gen/base-grammar_eos.gr"
 
 for grammar_class in "${grammar_classes[@]}"
 do
+    echo "Grammar class: $grammar_class"
     python monte_carlo_simulation.py \
         --grammar_class $grammar_class \
         --grammar_file $grammar_file \
