@@ -17,6 +17,14 @@ from src.length_sampling.lower_bound_perplexity import (
 import gzip
 import math
 import json
+from functools import partial
+import multiprocessing as mp
+
+
+def process_sentence_with_sampler(sampler, sentence: str):
+    """Helper function for multiprocessing that calculates log probability for a single sentence."""
+    log_prob = sampler.log_probability_given_length(sentence.split())
+    return sentence, float(log_prob)
 
 
 def calculate_true_log_probabilities(sampler, sentences, num_workers):
@@ -30,11 +38,6 @@ def calculate_true_log_probabilities(sampler, sentences, num_workers):
     Returns:
         dict: mapping from sentences to their true log probabilities
     """
-
-    def process_sentence(sentence: str):
-        log_prob = sampler.log_probability_given_length(sentence.split())
-        return sentence, float(log_prob)
-
     unique_sentences = set(sentences)  # Remove duplicates
 
     if num_workers == 1:
@@ -42,28 +45,37 @@ def calculate_true_log_probabilities(sampler, sentences, num_workers):
         return {
             sentence: prob
             for sentence, prob in map(
-                process_sentence,
+                partial(process_sentence_with_sampler, sampler),
                 tqdm(unique_sentences, desc="Calculating true probabilities"),
             )
         }
 
-    # Parallel processing for num_workers > 1
-    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
-        future_to_sentence = {
-            executor.submit(process_sentence, sentence): sentence
-            for sentence in unique_sentences
-        }
-
+    # Initialize multiprocessing Pool with shared sampler
+    with mp.Pool(
+        processes=num_workers, initializer=init_worker, initargs=(sampler,)
+    ) as pool:
         results = {}
-        for future in tqdm(
-            concurrent.futures.as_completed(future_to_sentence),
-            total=len(future_to_sentence),
+        # Use imap_unordered for better progress tracking
+        for sentence, prob in tqdm(
+            pool.imap_unordered(process_sentence_worker, unique_sentences),
+            total=len(unique_sentences),
             desc="Calculating true probabilities",
         ):
-            sentence, prob = future.result()
             results[sentence] = prob
 
     return results
+
+
+def init_worker(sampler_instance):
+    """Initialize each worker process with a copy of the sampler."""
+    global shared_sampler
+    shared_sampler = sampler_instance
+
+
+def process_sentence_worker(sentence):
+    """Worker function that uses the shared sampler."""
+    global shared_sampler
+    return process_sentence_with_sampler(shared_sampler, sentence)
 
 
 def main():
