@@ -167,3 +167,4 @@ models/*
 *.o*
 .DS_Store
 .venv
+logs
