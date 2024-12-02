@@ -12,12 +12,12 @@
 module load stack/2024-05  gcc/13.2.0 python/3.10.13
 source .venv/bin/activate
 
-n_samples=100_000_000
+n_samples=100
 n_processes=64
 grammar_name="base-grammar_eos_zipf.gr"
 min_length=1
 max_length=20
-output_name="100M_samples_eos_zipf_min${min_length}_max${max_length}"
+output_name="100_samples_eos_zipf_min${min_length}_max${max_length}"
 
 
 export PYTHONPATH="."
@@ -29,6 +29,5 @@ python scripts/length_sampling.py \
     --min_length $min_length \
     --max_length $max_length \
     --num_samples $n_samples \
-    --output_path "results/length_sampling/${output_name}/samples.txt" \
-    --output_sent \
-    --num_workers $n_processes
+    --output_path "results/length_sampling/${output_name}/samples.txt.gz" \
+     --num_workers $n_processes

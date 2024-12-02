@@ -4,6 +4,9 @@ MARKER_REVERSE = "REVERSE"
 
 
 class PerturbationFunc:
+    def __init__(self, **kwargs):
+        super().__init__()
+
     def perturb(self, sentence: str, **kwargs) -> str:
         raise NotImplementedError
 
@@ -63,6 +66,10 @@ class FullReverse(PerturbationFunc):
 
 
 class DeterministicShuffle(PerturbationFunc):
+    def __init__(self, seed):
+        super().__init__()
+        self.seed = seed
+
     def perturb(self, sent):
         # Save current random state
         state = random.getstate()
@@ -95,6 +102,11 @@ class NonDeterministicShuffle(PerturbationFunc):
 
 
 class LocalShuffle(PerturbationFunc):
+    def __init__(self, seed, window):
+        super().__init__()
+        self.seed = seed
+        self.window = window
+
     def perturb(self, sent):
         tokens = sent.split(" ")
         eos = tokens.pop() if tokens[-1] == "[eos]" else None
