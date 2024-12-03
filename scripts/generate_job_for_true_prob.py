@@ -10,35 +10,33 @@ def generate_job_script(
     end_idx: int,
     total_jobs: int,
     exp_name: str,
-    sample_size: int,
 ) -> str:
     return f"""#!/bin/bash
 
-#SBATCH --ntasks=64
+#SBATCH --ntasks=128
 #SBATCH --time=24:00:00
 #SBATCH --mem-per-cpu=2g
 #SBATCH --tmp=20g
-#SBATCH --job-name={exp_name}_split_{job_id}_of_{total_jobs}
-#SBATCH --output=logs/{exp_name}_split_{job_id}_of_{total_jobs}.out
-#SBATCH --error=logs/{exp_name}_split_{job_id}_of_{total_jobs}.err
+#SBATCH --job-name={exp_name}_100M_samples_split_{job_id}_of_{total_jobs}
+#SBATCH --output=logs/{exp_name}_100M_samples/split_{job_id}_of_{total_jobs}.out
+#SBATCH --error=logs/{exp_name}_100M_samples/split_{job_id}_of_{total_jobs}.err
 
 module load stack/2024-05  gcc/13.2.0 python/3.10.13
 source .venv/bin/activate
 export PYTHONPATH=.
 
 grammar_name="base-grammar_eos_zipf.gr"
-n_processes=64
+n_processes=128
 
 python scripts/calculate_true_prob.py \\
     --grammar_file data_gen/$grammar_name \\
     --start_symbol "S" \\
     --normalize \\
-    --sample_path "results/length_sampling/{exp_name}/samples.txt.gz" \\
-    --output_path "results/length_sampling/{exp_name}/probabilities_split_{job_id}_of_{total_jobs}.json.gz" \\
+    --sentence_counts_path "results/length_sampling/{exp_name}/sample_counts.csv.gz" \\
+    --output_path "results/length_sampling/{exp_name}/true_probs_100M_samples/probability_split_{job_id}_of_{total_jobs}.csv.gz" \\
     --num_workers $n_processes \\
     --start_index {start_idx} \\
-    --end_index {end_idx} \\
-    --sample_size {sample_size}
+    --end_index {end_idx}
 """
 
 
@@ -59,6 +57,12 @@ def main():
         help="Number of jobs to split into (default: 10)",
     )
     parser.add_argument(
+        "--job_name",
+        type=str,
+        required=True,
+        help="Name of the job scripts (default: count_balanced_samples100)",
+    )
+    parser.add_argument(
         "--exp_name",
         type=str,
         required=True,
@@ -71,7 +75,7 @@ def main():
 
     sentences_per_job = math.ceil(args.sample_size / args.num_jobs)
 
-    output_dir = Path(args.output_dir) / args.exp_name
+    output_dir = Path(args.output_dir) / args.job_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for job_id in range(args.num_jobs):
@@ -84,7 +88,6 @@ def main():
             end_idx,
             args.num_jobs,
             args.exp_name,
-            args.sample_size,
         )
 
         script_path = output_dir / f"job_{job_id + 1}_of_{args.num_jobs}.sh"

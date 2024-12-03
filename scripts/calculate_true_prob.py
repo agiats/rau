@@ -83,7 +83,7 @@ def main():
     parser.add_argument("--grammar_file", type=str)
     parser.add_argument("--start_symbol", type=str, default="S")
     parser.add_argument("--normalize", action="store_true", default=True)
-    parser.add_argument("--sample_path", type=lambda p: Path(p).resolve())
+    parser.add_argument("--sentence_counts_path", type=lambda p: Path(p).resolve())
     parser.add_argument("--output_path", type=lambda p: Path(p).resolve())
     parser.add_argument(
         "--num_workers",
@@ -91,7 +91,6 @@ def main():
         default=1,
         help="Number of worker processes for parallel sampling",
     )
-    parser.add_argument("--sample_size", type=int, default=-1)
     parser.add_argument("--start_index", type=int, default=None)
     parser.add_argument("--end_index", type=int, default=None)
     args = parser.parse_args()
@@ -100,28 +99,18 @@ def main():
     )
     sampler = construct_pcfg_sampler(grammar)
 
-    print("Reading sentences...")
-    if args.sample_size > 0:
-        # Only read the first sample_size lines to save memory
-        with gzip.open(args.sample_path, "rt", encoding="utf-8") as f:
-            sentences = [next(f).strip() for _ in range(args.sample_size)]
-        print("Sampling size:", len(sentences))
-    else:
-        with gzip.open(args.sample_path, "rt", encoding="utf-8") as f:
-            sentences = f.read().strip().split("\n")
+    # load sentence counts
+    print("Loading sentence counts")
+    sentence_counts = pl.read_csv(
+        args.sentence_counts_path, new_columns=["sentence", "count"]
+    )
+    sentence_counts = sentence_counts.filter(pl.col("count").is_not_null())
 
     if args.start_index is not None and args.end_index is not None:
-        sentences = sentences[args.start_index : args.end_index]
-
-    counter = Counter(sentences)
-    sentence_counts = pl.DataFrame(
-        {
-            "sentence": list(counter.keys()),
-            "count": list(counter.values()),
-        }
-    )
+        sentence_counts = sentence_counts[args.start_index : args.end_index]
 
     print("Calculating true probabilities...")
+    sentences = sentence_counts["sentence"].to_list()
     sentence_to_true_log_prob = calculate_true_log_probabilities(
         sampler, sentences, args.num_workers
     )
@@ -136,12 +125,11 @@ def main():
     sentence_counts = sentence_counts.join(
         sentence_to_true_log_prob, on="sentence", how="inner"
     )
-    assert len(sentence_counts) == len(counter)
 
     # output
-    with gzip.open(args.output_path, "wt", encoding="utf-8") as f:
-        for row in sentence_counts.iter_rows(named=True):
-            f.write(json.dumps(row) + "\n")
+    args.output_path.parent.mkdir(parents=True, exist_ok=True)
+    with gzip.open(args.output_path, "wt") as f:
+        sentence_counts.write_csv(f, include_header=True)
 
 
 if __name__ == "__main__":

@@ -100,6 +100,9 @@ class PCFG:
                 break
         return rhs.split(" "), idx
 
+    def perturb_base_sentence(self, sent):
+        return sent
+
 
 class PCFGDeterministicShuffle(PCFG):
     def __init__(self, grammar_file, seed=42):
@@ -111,6 +114,9 @@ class PCFGDeterministicShuffle(PCFG):
         if sent is None:
             return None
 
+        return self.perturb_base_sentence(sent)
+
+    def perturb_base_sentence(self, sent):
         # Save current random state
         state = random.getstate()
 
@@ -128,6 +134,8 @@ class PCFGDeterministicShuffle(PCFG):
             tokens.append(eos)
         return ' '.join(tokens)
 
+
+
 class PCFGNonDeterministicShuffle(PCFG):
     def __init__(self, grammar_file):
         super().__init__(grammar_file)
@@ -136,7 +144,10 @@ class PCFGNonDeterministicShuffle(PCFG):
         sent = super().sample_sentence(max_expansions, bracketing)
         if sent is None:
             return None
+        return self.perturb_base_sentence(sent)
 
+
+    def perturb_base_sentence(self, sent):
         tokens = sent.split(' ')
         eos = tokens.pop() if tokens[-1] == '[eos]' else None
 
@@ -156,7 +167,9 @@ class PCFGLocalShuffle(PCFG):
         sent = super().sample_sentence(max_expansions, bracketing)
         if sent is None:
             return None
+        return self.perturb_base_sentence(sent)
 
+    def perturb_base_sentence(self, sent):
         tokens = sent.split(' ')
         eos = tokens.pop() if tokens[-1] == '[eos]' else None
 
@@ -186,7 +199,9 @@ class PCFGEvenOddShuffle(PCFG):
         sent = super().sample_sentence(max_expansions, bracketing)
         if sent is None:
             return None
+        return self.perturb_base_sentence(sent)
 
+    def perturb_base_sentence(self, sent):
         tokens = sent.split(' ')
         eos = tokens.pop() if tokens[-1] == '[eos]' else None
 
@@ -207,6 +222,9 @@ class PCFGNoReverse(PCFG):
         sent = super().sample_sentence(max_expansions, bracketing)
         if sent is None:
             return None
+        return self.perturb_base_sentence(sent)
+
+    def perturb_base_sentence(self, sent):
         tokens = sent.split(' ')
 
         # Remove and store [eos]
@@ -228,6 +246,9 @@ class PCFGPartialReverse(PCFG):
         sent = super().sample_sentence(max_expansions, bracketing)
         if sent is None:
             return None
+        return self.perturb_base_sentence(sent)
+
+    def perturb_base_sentence(self, sent):
         tokens = sent.split(' ')
 
         # Remove and store [eos]
@@ -252,6 +273,9 @@ class PCFGFullReverse(PCFG):
         sent = super().sample_sentence(max_expansions, bracketing)
         if sent is None:
             return None
+        return self.perturb_base_sentence(sent)
+
+    def perturb_base_sentence(self, sent):
         tokens = sent.split(' ')
 
         # Remove and store [eos]

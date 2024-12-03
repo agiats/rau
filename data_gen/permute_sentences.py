@@ -78,7 +78,8 @@ args = parser.parse_args()
 file = open(args.sentence_file, 'r')
 sentences = file.readlines()
 
-for i in range(64):
+# for i in range(64):
+for i in range(1):
     if not os.path.exists(args.output_folder):
         os.mkdir(args.output_folder)
     grammar_name = format(i, '06b')[::-1]

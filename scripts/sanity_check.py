@@ -21,7 +21,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import entropy
-
+import polars as pl
 
 def plot_probability_distributions(
     data, comparison_name, comparison_prob, figsize=(12, 6), output_path=None
@@ -129,10 +129,10 @@ def main():
     dfs = []
     for file in args.exp_dir.glob(f"*{args.input_suffix}"):
         with gzip.open(file, "rt") as f:
-            dfs.append(pd.read_json(f, lines=True, orient="records"))
+            dfs.append(pl.read_csv(f, new_columns=["sentence", "count"]).filter(pl.col("count").is_not_null()))
 
     print(f"{len(dfs)} files found.")
-    df = pd.concat(dfs, ignore_index=True)
+    df = pl.concat(dfs).to_pandas()
 
     # distribution of counts
     plot_sentence_count_distribution(
@@ -144,7 +144,9 @@ def main():
 
     print(f"KL Divergence (Monte Carlo): {kl_div_monte_carlo:.6f}")
     # save
-    with open(args.exp_dir / "kl_divergence_between_true_and_estimated_dist.value", "w") as f:
+    with open(
+        args.exp_dir / "kl_divergence_between_true_and_estimated_dist.value", "w"
+    ) as f:
         f.write(str(kl_div_monte_carlo))
 
     plot_probability_distributions(

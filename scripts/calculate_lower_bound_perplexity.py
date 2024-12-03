@@ -17,7 +17,7 @@ from src.length_sampling.lower_bound_perplexity import (
     Parts,
 )
 import math
-import pandas as pd
+import polars as pl
 
 
 def main():
@@ -39,10 +39,15 @@ def main():
     dfs = []
     for file in args.exp_dir.glob(f"*{args.input_suffix}"):
         with gzip.open(file, "rt") as f:
-            dfs.append(pd.read_json(f, lines=True, orient="records"))
+            # dfs.append(pd.read_json(f, lines=True, orient="records"))
+            dfs.append(
+                pl.read_csv(
+                    f, new_columns=["sentence", "count", "true_log_prob", "true_prob"]
+                )
+            )
 
     print(f"{len(dfs)} files found.")
-    df = pd.concat(dfs, ignore_index=True)
+    df = pl.concat(dfs).filter(pl.col("count").is_not_null()).to_pandas()
 
     # calculate lower bound perplexity
     valid_lengths = sampler.valid_lengths(args.min_length, args.max_length)

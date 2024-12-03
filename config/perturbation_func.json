@@ -1,0 +1,26 @@
+{
+    "NoReverse": {
+        "_target_": "src.perturbation.perturbation_func.NoReverse"
+    },
+    "PartialReverse": {
+        "_target_": "src.perturbation.perturbation_func.PartialReverse"
+    },
+    "FullReverse": {
+        "_target_": "src.perturbation.perturbation_func.FullReverse"
+    },
+    "DeterministicShuffle": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 42
+    },
+    "NonDeterministicShuffle": {
+        "_target_": "src.perturbation.perturbation_func.NonDeterministicShuffle"
+    },
+    "LocalShuffle": {
+        "_target_": "src.perturbation.perturbation_func.LocalShuffle",
+        "seed": 42,
+        "window": 5
+    },
+    "EvenOddShuffle": {
+        "_target_": "src.perturbation.perturbation_func.EvenOddShuffle"
+    }
+}
