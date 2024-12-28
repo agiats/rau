@@ -97,6 +97,31 @@ class NGramModel:
         return sequence
 
 
+    def get_probability(self, context, token):
+        """
+        Get probability of token given context
+
+        Args:
+            context: Tuple of tokens representing the context
+            token: Token to get probability for
+
+        Returns:
+            float: Probability of token given context
+
+        Raises:
+            ValueError: If context or token is not found in the model
+        """
+        dist = self.model.get(context)
+        if dist is None:
+            raise ValueError(f"Context {context} not found in the model")
+
+        prob = dist.get(token)
+        if prob is None:
+            raise ValueError(f"Token {token} not found for context {context}")
+
+        return prob
+
+
     def save(self, filepath):
         """
         Save model to file using pickle
@@ -137,28 +162,3 @@ class NGramModel:
         )
         model.model = data['model']  # Override the randomly initialized model
         return model
-
-    def get_probability(self, context, token):
-        """
-        Get probability of token given context
-
-        Args:
-            context: Tuple of tokens representing the context
-            token: Token to get probability for
-
-        Returns:
-            float: Probability of token given context
-
-        Raises:
-            ValueError: If context or token is not found in the model
-        """
-        dist = self.model.get(context)
-        if dist is None:
-            raise ValueError(f"Context {context} not found in the model")
-
-        prob = dist.get(token)
-        if prob is None:
-            raise ValueError(f"Token {token} not found for context {context}")
-
-        return prob
-
