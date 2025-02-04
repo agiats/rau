@@ -10,8 +10,9 @@ python = "^3.12"
 scipy = "^1.15.1"
 matplotlib = "^3.10.0"
 pandas = "^2.2.3"
-numpy = "^2.2.2"
+numpy = "^1.26.4"
 torch = "^2.6.0"
+rau = {git = "ssh://git@github.com/bdusell/rau.git"}
 
 
 [build-system]
