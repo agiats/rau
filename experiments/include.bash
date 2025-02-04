@@ -7,7 +7,7 @@ FIGURES_DIR=$RESULTS_DIR/figures
 EXP_NAMES=("local_entropy_disjoint" "local_entropy_non_disjoint")
 ARCHITECTURES=("lstm" "transformer")
 
-NUM_SEEDS=5
+NUM_TRIALS=5
 submit_job() {
   bash experiments/submit_job.bash "$@"
 }

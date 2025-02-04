@@ -5,6 +5,7 @@ set -euo pipefail
 grammar_dir="$1"
 exp_name="$2"
 grammar_name="$3"
+trial="$4"
 
 python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --training-data "$grammar_dir" \
@@ -22,13 +23,12 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --learning-rate-patience 5 \
     --learning-rate-decay-factor 0.5 \
     --examples-per-checkpoint 10000 \
-    --output "$RESULTS_DIR"/"$exp_name"/lstm/"$grammar_name"
+    --output "$RESULTS_DIR"/"$exp_name"/lstm/"$grammar_name"_trial"$trial"
 
-
-eval_dir="$RESULTS_DIR"/"$exp_name"/lstm/"$grammar_name"/evaluation
+eval_dir="$RESULTS_DIR"/"$exp_name"/lstm/"$grammar_name"_trial"$trial"/evaluation
 mkdir -p "$eval_dir"
 python "$RAU_DIR"/src/rau/tasks/language_modeling/evaluate.py \
-    --load-model "$RESULTS_DIR"/"$exp_name"/lstm/"$grammar_name" \
+    --load-model "$RESULTS_DIR"/"$exp_name"/lstm/"$grammar_name"_trial"$trial" \
     --training-data "$grammar_dir" \
     --input test \
     --batching-max-tokens 2048 > "$eval_dir"/test.json
