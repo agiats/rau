@@ -163,6 +163,7 @@ def main():
         print(f"\nWriting counts to {args.output_path}...")
         with gzip.open(args.output_path, "wt", encoding="utf-8") as f:
             json.dump(samples, f, indent=2)
+
     # Save valid lengths
     with open(args.output_path.parent / "valid_lengths.txt", "w") as f:
         f.write(",".join(map(str, valid_lengths)))

@@ -1,0 +1,83 @@
+{
+    "DeterministicShuffle_seed1": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 1
+    },
+    "DeterministicShuffle_seed2": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 2
+    },
+    "DeterministicShuffle_seed3": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 3
+    },
+    "DeterministicShuffle_seed4": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 4
+    },
+    "DeterministicShuffle_seed5": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 5
+    },
+    "DeterministicShuffle_seed6": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 6
+    },
+    "DeterministicShuffle_seed7": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 7
+    },
+    "DeterministicShuffle_seed8": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 8
+    },
+    "DeterministicShuffle_seed9": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 9
+    },
+    "DeterministicShuffle_seed10": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 10
+    },
+    "DeterministicShuffle_seed11": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 11
+    },
+    "DeterministicShuffle_seed12": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 12
+    },
+    "DeterministicShuffle_seed13": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 13
+    },
+    "DeterministicShuffle_seed14": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 14
+    },
+    "DeterministicShuffle_seed15": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 15
+    },
+    "DeterministicShuffle_seed16": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 16
+    },
+    "DeterministicShuffle_seed17": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 17
+    },
+    "DeterministicShuffle_seed18": {
+        "_target_": "src.perturbation.perturbation_func.LocalShuffle",
+        "seed": 3,
+        "window": 4
+    },
+    "DeterministicShuffle_seed19": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 19
+    },
+    "DeterministicShuffle_seed20": {
+        "_target_": "src.perturbation.perturbation_func.DeterministicShuffle",
+        "seed": 20
+    }
+}

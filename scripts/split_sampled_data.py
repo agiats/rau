@@ -30,8 +30,7 @@ def create_splits(input_file, output_dir):
             sentences = [line.strip() for line in f]
     logger.info(f"Loaded {len(sentences)} sentences")
 
-    # remove [eos] at the end
-    sentences = [" ".join(sentence.split()[:-1]) for sentence in sentences]
+    sentences = [" ".join(sentence.split()) for sentence in sentences]
 
     # Calculate split sizes (80-10-10 split)
     train_size = int(0.8 * len(sentences))

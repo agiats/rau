@@ -1,0 +1,5 @@
+{
+    "Reverse": {
+        "_target_": "src.perturbation.perturbation_func.Reverse"
+    }
+}

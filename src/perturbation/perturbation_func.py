@@ -65,6 +65,21 @@ class FullReverse(PerturbationFunc):
         return " ".join(tokens)
 
 
+class Reverse(PerturbationFunc):
+    # this is not in Kallini's
+    def perturb(self, sent):
+        tokens = sent.split(" ")
+
+        # Remove and store [eos]
+        eos = tokens.pop() if tokens[-1] == "[eos]" else None
+        # Reverse all tokens
+        tokens = tokens[::-1]
+
+        if eos:
+            tokens.append(eos)
+        return " ".join(tokens)
+
+
 class DeterministicShuffle(PerturbationFunc):
     def __init__(self, seed):
         super().__init__()
@@ -138,6 +153,20 @@ class EvenOddShuffle(PerturbationFunc):
         even = [tok for i, tok in enumerate(tokens) if i % 2 == 0]
         odd = [tok for i, tok in enumerate(tokens) if i % 2 != 0]
         shuffled = even + odd
+
+        if eos:
+            shuffled.append(eos)
+        return " ".join(shuffled)
+
+
+class OddEvenShuffle(PerturbationFunc):
+    def perturb(self, sent):
+        tokens = sent.split(" ")
+        eos = tokens.pop() if tokens[-1] == "[eos]" else None
+
+        odd = [tok for i, tok in enumerate(tokens) if i % 2 != 0]
+        even = [tok for i, tok in enumerate(tokens) if i % 2 == 0]
+        shuffled = odd + even
 
         if eos:
             shuffled.append(eos)

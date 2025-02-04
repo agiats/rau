@@ -170,3 +170,4 @@ models/*
 logs
 *.err
 *.out
+work/

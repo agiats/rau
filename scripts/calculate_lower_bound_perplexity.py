@@ -51,9 +51,9 @@ def main():
 
     # calculate lower bound perplexity
     valid_lengths = sampler.valid_lengths(args.min_length, args.max_length)
-    total_neg_log_prob = -1.0 * df["true_log_prob"].sum()
+    total_neg_log_prob = -1.0 * (df["true_log_prob"] * df["count"]).sum()
 
-    df["sent_len"] = df["sentence"].map(lambda x: len(x.split()))
+    df["sent_len"] = df["sentence"].map(lambda x: len(x.split()) + 1)  # + 1 for EOS
     total_len = (df["sent_len"] * df["count"]).sum()
     num_samples = df["count"].sum()
     parts = Parts(total_neg_log_prob, total_len, num_samples)

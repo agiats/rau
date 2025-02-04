@@ -1,0 +1,5 @@
+{
+    "OddEvenShuffle": {
+        "_target_": "src.perturbation.perturbation_func.OddEvenShuffle"
+    }
+}

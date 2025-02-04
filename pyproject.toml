@@ -9,6 +9,10 @@ include = ["src"]
 [tool.poetry.dependencies]
 python = "^3.10"
 tqdm = "^4.66.6"
+frozendict = "^2.4.6"
+rayuela = {git = "git@github.com:rycolab/rayuela.git", develop = true}
+numpy = "<2"
+statsmodels = "^0.14.4"
 
 
 [build-system]
