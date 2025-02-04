@@ -70,7 +70,7 @@ fi
 result=$( \
   sbatch \
     --job-name="$job_name" \
-    --output="$BASE_DIR"/job-outputs/"$job_name".txt \
+    --output="$RESULTS_DIR"/job-outputs/"$job_name".txt \
     --open-mode=append \
     "${sbatch_flags[@]}" \
     experiments/job.bash "$device" "${command_args[@]}" \
