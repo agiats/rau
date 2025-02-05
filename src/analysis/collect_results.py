@@ -6,7 +6,6 @@ import argparse
 
 
 def extract_grammar_and_trial(path):
-    # パスから文法名とtrial番号を抽出
     match = re.match(r".*?/([^/]+)_trial(\d+)/evaluation/test.json", str(path))
     if match:
         return match.group(1), int(match.group(2))
@@ -17,39 +16,48 @@ def collect_results(data_dir, result_dir, exp_name, architectures, output_path):
     results = []
 
     for arch in architectures:
-        # 評価結果のディレクトリパス
         result_base = Path(result_dir) / exp_name / arch
 
-        # test.jsonファイルを検索
         for test_path in result_base.glob("**/test.json"):
             grammar_name, trial = extract_grammar_and_trial(test_path)
             if grammar_name is None:
                 continue
 
-            # メタデータのパス
             metadata_path = Path(data_dir) / exp_name / grammar_name / "metadata.json"
 
             try:
-                # テスト結果の読み込み
+
                 with open(test_path) as f:
                     test_results = json.load(f)
 
-                # メタデータの読み込み
                 with open(metadata_path) as f:
                     metadata = json.load(f)
 
-                # 結果の辞書を作成
                 result = {
                     "grammar_name": grammar_name,
                     "trial": trial,
                     "architecture": arch,
-                    "n_states": metadata["n_states"],
-                    "N_sym": metadata["N_sym"],
-                    "topology_seed": metadata["topology_seed"],
-                    "weight_seed": metadata["weight_seed"],
-                    "mean_length": metadata["mean_length"],
-                    "entropy": metadata["entropy"],
-                    "next_symbol_entropy": metadata["next_symbol_entropy"],
+                    "n_states": (
+                        metadata["n_states"] if "n_states" in metadata else None
+                    ),
+                    "N_sym": metadata["N_sym"] if "N_sym" in metadata else None,
+                    "topology_seed": (
+                        metadata["topology_seed"]
+                        if "topology_seed" in metadata
+                        else None
+                    ),
+                    "weight_seed": (
+                        metadata["weight_seed"] if "weight_seed" in metadata else None
+                    ),
+                    "mean_length": (
+                        metadata["mean_length"] if "mean_length" in metadata else None
+                    ),
+                    "entropy": metadata["entropy"] if "entropy" in metadata else None,
+                    "next_symbol_entropy": (
+                        metadata["next_symbol_entropy"]
+                        if "next_symbol_entropy" in metadata
+                        else None
+                    ),
                     "2_local_entropy": metadata["local_entropy"]["2"],
                     "3_local_entropy": metadata["local_entropy"]["3"],
                     "4_local_entropy": metadata["local_entropy"]["4"],
@@ -73,10 +81,8 @@ def collect_results(data_dir, result_dir, exp_name, architectures, output_path):
             except KeyError as e:
                 print(f"Warning: Missing key in data: {e}")
 
-    # DataFrameを作成して保存
     if results:
         df = pd.DataFrame(results)
-        # 列の順序を指定
         columns = [
             "grammar_name",
             "trial",
