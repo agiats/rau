@@ -4,6 +4,7 @@ import pandas as pd
 from pathlib import Path
 from typing import List
 import json
+from tqdm import tqdm
 
 # --- Import NLTK modules ---
 from nltk.lm import MLE
@@ -75,13 +76,13 @@ def calculate_entropy_nltk(model: MLE, sentences: list, n: int, add_eos: bool) -
     total_log_prob = 0.0
     total_ngrams = 0
 
-    for sentence in sentences:
+    for sentence in tqdm(sentences, desc="Calculating entropy"):
         tokens = sentence.split()
         if add_eos:
             # Add BOS and EOS tokens. For example, for n=3:
             # ['<s>', '<s>', token1, token2, ..., tokenN, '</s>']
             padded_sentence = list(pad_both_ends(tokens, n))
-            for i in range(n - 1, len(padded_sentence)):
+            for i in range(n - 1, len(padded_sentence) - n + 2):
                 context = tuple(padded_sentence[i - n + 1 : i])
                 word = padded_sentence[i]
                 prob = model.score(word, context)
@@ -138,14 +139,16 @@ def main():
     corpus = load_data(args.train_path, args.valid_path, args.test_path)
 
     # Combine all data for training and evaluation
-    results = {}
+    results = {"local_entropy": {}}
 
     for n in args.n:
         print(f"Processing {n}-gram model on the combined corpus...")
         # Train the model using MLE (pure count-based probability estimation)
+        print("Training model...")
         model = train_ngram_model(n, corpus, args.add_eos)
+        print("Calculating entropy...")
         entropy = calculate_entropy_nltk(model, corpus, n, args.add_eos)
-        results[f"{n}_local_entropy"] = entropy
+        results["local_entropy"][f"{n}"] = entropy
         print(f"{n}_local_entropy: {entropy}")
 
     with open(args.output_path, "w") as f:
