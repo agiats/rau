@@ -1,0 +1,190 @@
+import argparse
+import os
+import sys
+from pathlib import Path
+import spacy
+from spacy.cli import download
+from tqdm import tqdm
+
+
+def ensure_spacy_model(model_name="en_core_web_sm"):
+    """Ensure the required spaCy model is downloaded"""
+    try:
+        nlp = spacy.load(model_name)
+    except OSError:
+        print(f"Downloading spacy model {model_name}...")
+        download(model_name)
+        nlp = spacy.load(model_name)
+    return nlp
+
+
+def preprocess_childes_line(line):
+    """Preprocess a line from CHILDES format
+    - Removes speaker markers (*XXX:)
+    - Removes content in square brackets [...]
+    - Returns None if the line should be skipped
+    """
+    line = line.strip()
+
+    # Skip empty lines
+    if not line:
+        return None
+
+    # Skip lines starting with = (file headers)
+    if line.startswith("="):
+        return None
+
+    # Skip lines starting with % (annotations)
+    if line.startswith("%"):
+        return None
+
+    # Remove speaker markers (*XXX:)
+    if line.startswith("*"):
+        line = line.split(":", 1)[1] if ":" in line else ""
+
+    # Remove content in square brackets, including [shakes head "no"]
+    while "[" in line and "]" in line:
+        start = line.find("[")
+        end = line.find("]", start) + 1
+        if end == 0:  # No closing bracket found
+            break
+        line = line[:start] + line[end:]
+
+    # Skip if line is empty after preprocessing
+    line = line.strip()
+    if not line:
+        return None
+
+    return line
+
+
+def preprocess_switchboard_line(line):
+    """Preprocess a line from Switchboard format
+    - Removes speaker markers (A:, B:, etc.)
+    - Returns None if the line should be skipped
+    """
+    line = line.strip()
+
+    # Skip empty lines
+    if not line:
+        return None
+
+    # Remove speaker markers (A:, B:, etc.)
+    if line and line[0].isalpha() and len(line) > 1 and line[1] == ":":
+        line = line[2:].strip()
+
+    # Skip if line is empty after preprocessing
+    if not line:
+        return None
+
+    return line
+
+
+def process_text_file(input_file, output_file, nlp, min_length=5):
+    """Process a single text file using the provided spaCy model"""
+    print(f"Processing {input_file}...")
+
+    input_path = str(input_file).lower()
+    is_childes = "childes" in input_path
+    is_switchboard = "switchboard" in input_path
+
+    with open(input_file, "r", encoding="utf-8") as f_in, open(
+        output_file, "w", encoding="utf-8"
+    ) as f_out:
+        # 行ごとに処理
+        for line in f_in:
+            # コーパス特有の前処理
+            if is_childes:
+                line = preprocess_childes_line(line)
+            elif is_switchboard:
+                line = preprocess_switchboard_line(line)
+
+            if line is None or not line:  # Skip empty lines or None
+                continue
+
+            doc = nlp(line.strip())
+            # 文ごとに処理
+            for sent in doc.sents:
+                # 各トークンを取得（空白文字は除外）
+                tokens = [token.text for token in sent if not token.is_space]
+                # 最小長を満たす場合のみ出力
+                if tokens and len(tokens) >= min_length:
+                    f_out.write(" ".join(tokens) + "\n")
+
+
+def process_directory(
+    input_dir, output_path, model_name="en_core_web_sm", min_length=5
+):
+    """Process all text files in the input directory and concatenate results"""
+    nlp = ensure_spacy_model(model_name)
+
+    # Create a temporary directory for intermediate files
+    temp_dir = Path(output_path).parent / "temp"
+    temp_dir.mkdir(parents=True, exist_ok=True)
+
+    input_files = sorted([f for f in Path(input_dir).glob("*") if f.is_file()])
+    temp_files = []
+
+    # Process each input file with progress bar
+    for input_file in tqdm(input_files, desc="Processing files"):
+        temp_output = temp_dir / f"{input_file.stem}_processed.txt"
+        process_text_file(input_file, temp_output, nlp, min_length)
+        temp_files.append(temp_output)
+
+    # Concatenate all processed files with progress bar
+    print("Concatenating files...")
+    with open(output_path, "w", encoding="utf-8") as outfile:
+        for temp_file in tqdm(temp_files, desc="Concatenating"):
+            with open(temp_file, "r", encoding="utf-8") as infile:
+                outfile.write(infile.read())
+            temp_file.unlink()  # Delete temporary file
+
+    # Clean up temporary directory
+    temp_dir.rmdir()
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Process text files and output tokenized sentences"
+    )
+    parser.add_argument("--input_dir", help="Input directory containing text files")
+    parser.add_argument("--output_path", help="Output text file path")
+    parser.add_argument(
+        "--spacy-model",
+        type=str,
+        default="en_core_web_sm",
+        help="spaCy model to use (default: en_core_web_sm)",
+    )
+    parser.add_argument(
+        "--min-length",
+        type=int,
+        default=2,
+        help="Minimum number of tokens required for a sentence (default: 5)",
+    )
+
+    args = parser.parse_args()
+
+    try:
+        # Verify input directory exists
+        if not os.path.isdir(args.input_dir):
+            raise FileNotFoundError(f"Input directory does not exist: {args.input_dir}")
+
+        # Create output directory if it doesn't exist
+        output_dir = os.path.dirname(args.output_path)
+        if output_dir:
+            Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+        # Process all files in the directory
+        process_directory(
+            args.input_dir, args.output_path, args.spacy_model, args.min_length
+        )
+
+        print(f"Output written to: {args.output_path}")
+
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
