@@ -5,6 +5,9 @@ from pathlib import Path
 import spacy
 from spacy.cli import download
 from tqdm import tqdm
+import tempfile
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 
 
 def ensure_spacy_model(model_name="en_core_web_sm"):
@@ -112,35 +115,42 @@ def process_text_file(input_file, output_file, nlp, min_length=5):
                     f_out.write(" ".join(tokens) + "\n")
 
 
-def process_directory(
-    input_dir, output_path, model_name="en_core_web_sm", min_length=5
-):
-    """Process all text files in the input directory and concatenate results"""
+def process_single_file(model_name, min_length, input_file):
+    """Process a single file with its own spaCy model instance"""
     nlp = ensure_spacy_model(model_name)
 
-    # Create a temporary directory for intermediate files
-    temp_dir = Path(output_path).parent / "temp"
-    temp_dir.mkdir(parents=True, exist_ok=True)
+    # Create a temporary file with a unique name
+    temp_fd, temp_path = tempfile.mkstemp(suffix=".txt")
+    os.close(temp_fd)
 
+    process_text_file(input_file, temp_path, nlp, min_length)
+    return temp_path
+
+
+def process_directory(
+    input_dir, output_path, model_name="en_core_web_sm", min_length=2, n_jobs=None
+):
+    """Process all text files in the input directory and concatenate results"""
     input_files = sorted([f for f in Path(input_dir).glob("*") if f.is_file()])
-    temp_files = []
 
-    # Process each input file with progress bar
-    for input_file in tqdm(input_files, desc="Processing files"):
-        temp_output = temp_dir / f"{input_file.stem}_processed.txt"
-        process_text_file(input_file, temp_output, nlp, min_length)
-        temp_files.append(temp_output)
+    # Create a process pool and process files in parallel
+    with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+        process_func = partial(process_single_file, model_name, min_length)
+        temp_files = list(
+            tqdm(
+                executor.map(process_func, input_files),
+                total=len(input_files),
+                desc="Processing files",
+            )
+        )
 
-    # Concatenate all processed files with progress bar
+    # Concatenate all processed files
     print("Concatenating files...")
     with open(output_path, "w", encoding="utf-8") as outfile:
         for temp_file in tqdm(temp_files, desc="Concatenating"):
             with open(temp_file, "r", encoding="utf-8") as infile:
                 outfile.write(infile.read())
-            temp_file.unlink()  # Delete temporary file
-
-    # Clean up temporary directory
-    temp_dir.rmdir()
+            os.unlink(temp_file)  # Delete temporary file
 
 
 def main():
@@ -159,7 +169,13 @@ def main():
         "--min-length",
         type=int,
         default=2,
-        help="Minimum number of tokens required for a sentence (default: 5)",
+        help="Minimum number of tokens required for a sentence (default: 2)",
+    )
+    parser.add_argument(
+        "--n-jobs",
+        type=int,
+        default=None,
+        help="Number of CPU cores to use (default: all available cores)",
     )
 
     args = parser.parse_args()
@@ -176,7 +192,11 @@ def main():
 
         # Process all files in the directory
         process_directory(
-            args.input_dir, args.output_path, args.spacy_model, args.min_length
+            args.input_dir,
+            args.output_path,
+            args.spacy_model,
+            args.min_length,
+            args.n_jobs,
         )
 
         print(f"Output written to: {args.output_path}")

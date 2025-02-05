@@ -21,6 +21,7 @@ for pair in "${src_dst_pair[@]}"; do
     submit_job \
     preprocess_babylm+"$src_name" \
     cpu \
+    --tasks=6 \
     --mem-per-cpu=32g \
     --time=4:00:00 \
     -- \
@@ -28,5 +29,6 @@ for pair in "${src_dst_pair[@]}"; do
     --input_dir "$src_dir" \
     --output_path "$dst_path" \
     --min-length 2 \
-    --spacy-model en_core_web_lg
+    --spacy-model en_core_web_lg \
+    --n-jobs 6
 done
