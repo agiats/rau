@@ -60,9 +60,15 @@ def process_split(perturb_func, input_file, output_file, n_workers, split_name, 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train_file", type=lambda p: Path(p).resolve(), required=True)
-    parser.add_argument("--dev_file", type=lambda p: Path(p).resolve(), required=True)
-    parser.add_argument("--test_file", type=lambda p: Path(p).resolve(), required=True)
+    parser.add_argument(
+        "--base_train_file", type=lambda p: Path(p).resolve(), required=True
+    )
+    parser.add_argument(
+        "--base_dev_file", type=lambda p: Path(p).resolve(), required=True
+    )
+    parser.add_argument(
+        "--base_test_file", type=lambda p: Path(p).resolve(), required=True
+    )
     parser.add_argument("--exp_dir", type=lambda p: Path(p).resolve(), required=True)
     parser.add_argument(
         "--perturb_config_file", type=lambda p: Path(p).resolve(), required=True
@@ -95,9 +101,9 @@ def main():
 
         # Process each split
         splits = {
-            "train": (args.train_file, perturb_dir / "train.txt"),
-            "dev": (args.dev_file, perturb_dir / "dev.txt"),
-            "test": (args.test_file, perturb_dir / "test.txt"),
+            "train": (args.base_train_file, perturb_dir / "train.txt"),
+            "dev": (args.base_dev_file, perturb_dir / "dev.txt"),
+            "test": (args.base_test_file, perturb_dir / "test.txt"),
         }
 
         for split_name, (input_file, output_file) in splits.items():

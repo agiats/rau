@@ -4,6 +4,7 @@ RESULTS_DIR=/cluster/work/cotterell/tsomeya/projects/lm_inductive_bias/results
 RAU_DIR=/cluster/home/tsomeya/projects/lm_inductive_bias/src/rau
 FIGURES_DIR=$RESULTS_DIR/figures
 
+PERTURBATION_CONFIG_FILE=/cluster/home/tsomeya/projects/lm_inductive_bias/config/perturbation_func.json
 ARCHITECTURES=("lstm" "transformer")
 ARCHITECTURE_LABELS=("LSTM" "Transformer")
 
