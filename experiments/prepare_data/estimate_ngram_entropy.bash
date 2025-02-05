@@ -2,7 +2,8 @@
 set -euo pipefail
 . experiments/include.bash
 
-BASE_DIR="$DATA_DIR"/BLLIP_XS
+data_name="BLLIP_XS"
+BASE_DIR="$DATA_DIR"/"$data_name"
 exp_name="deterministic_shuffles"
 
 for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
@@ -19,10 +20,10 @@ for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
     fi
 
     submit_job \
-        ngram_entropy+"$(basename "$BASE_DIR")"+"$exp_name"+"$grammar_name" \
+        ngram_entropy+"$data_name"+"$exp_name"+"$grammar_name" \
         cpu \
         --time=4:00:00 \
-        --mem-per-cpu=64g \
+        --mem-per-cpu=16g \
         -- \
         python local_entropy/estimate_by_ngram.py \
             "$train_file" \
