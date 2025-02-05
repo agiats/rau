@@ -4,8 +4,8 @@ RESULTS_DIR=/cluster/work/cotterell/tsomeya/projects/lm_inductive_bias/results
 RAU_DIR=/cluster/home/tsomeya/projects/lm_inductive_bias/src/rau
 FIGURES_DIR=$RESULTS_DIR/figures
 
-EXP_NAMES=("local_entropy_disjoint" "local_entropy_non_disjoint")
 ARCHITECTURES=("lstm" "transformer")
+ARCHITECTURE_LABELS=("LSTM" "Transformer")
 
 NUM_TRIALS=5
 submit_job() {
