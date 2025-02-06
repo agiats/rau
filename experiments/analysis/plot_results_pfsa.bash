@@ -20,7 +20,8 @@ for split_name in "${split_names[@]}"; do
         --results_path "$RESULTS_PATH" \
         --output_dir "$PLOTS_DIR" \
         --architectures "${ARCHITECTURES[@]}" \
-        --architecture_labels "${ARCHITECTURE_LABELS[@]}"
+        --architecture_labels "${ARCHITECTURE_LABELS[@]}" \
+        --split_name "$split_name"
     done
 done
 

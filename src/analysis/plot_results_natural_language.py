@@ -69,7 +69,7 @@ def plot_local_entropy_comparison(df):
                     ax=axes[i],
                     palette="coolwarm",
                     s=80,
-                    alpha=0.8,
+                    alpha=0.6,
                 )
             elif exp_name == "DeterministicShuffle":
                 axes[i].scatter(
@@ -77,7 +77,7 @@ def plot_local_entropy_comparison(df):
                     exp_data[f"{n_gram}_local_entropy"],
                     color="gray",
                     s=80,
-                    alpha=0.8,
+                    alpha=0.6,
                     label="DeterministicShuffle",
                 )
             else:
@@ -89,7 +89,7 @@ def plot_local_entropy_comparison(df):
                     label=exp_name,
                 )
 
-        axes[i].axhline(y=base_value, color="red", linestyle="--", alpha=0.8)
+        axes[i].axhline(y=base_value, color="red", linestyle="--", alpha=0.6)
         axes[i].set_title(f"{n_gram}-local Entropy")
         axes[i].set_ylabel("Local Entropy (bits)" if i == 0 else "")
         axes[i].grid(True, alpha=0.3)
@@ -132,13 +132,25 @@ def plot_cross_entropy_correlation(df, architecture_map):
             for exp_name in ["Base", "EvenOddShuffle", "Reverse"]:
                 exp_data = model_data[model_data["experiment_name"] == exp_name]
                 if not exp_data.empty:
+                    # Average across training seeds for each grammar
+                    exp_data_mean = (
+                        exp_data.groupby("grammar_name")
+                        .agg(
+                            {
+                                f"{n_gram}_local_entropy": "mean",
+                                "cross_entropy_per_token_base_2": "mean",
+                            }
+                        )
+                        .reset_index()
+                    )
+
                     axes[i].scatter(
-                        exp_data[f"{n_gram}_local_entropy"],
-                        exp_data["cross_entropy_per_token_base_2"],
+                        exp_data_mean[f"{n_gram}_local_entropy"],
+                        exp_data_mean["cross_entropy_per_token_base_2"],
                         marker=marker_map[exp_name],
                         color=color_map[exp_name],
                         s=150 if exp_name == "Base" else 80,
-                        alpha=0.8,
+                        alpha=0.6,
                         label=exp_name,
                     )
 
@@ -147,13 +159,24 @@ def plot_cross_entropy_correlation(df, architecture_map):
                 model_data["experiment_name"] == "DeterministicShuffle"
             ]
             if not det_data.empty:
+                det_data_mean = (
+                    det_data.groupby("grammar_name")
+                    .agg(
+                        {
+                            f"{n_gram}_local_entropy": "mean",
+                            "cross_entropy_per_token_base_2": "mean",
+                        }
+                    )
+                    .reset_index()
+                )
+
                 axes[i].scatter(
-                    det_data[f"{n_gram}_local_entropy"],
-                    det_data["cross_entropy_per_token_base_2"],
+                    det_data_mean[f"{n_gram}_local_entropy"],
+                    det_data_mean["cross_entropy_per_token_base_2"],
                     marker=marker_map["DeterministicShuffle"],
                     color=color_map["DeterministicShuffle"],
                     s=80,
-                    alpha=0.8,
+                    alpha=0.6,
                     edgecolor="white",
                     linewidth=0.5,
                     label="DeterministicShuffle",
@@ -164,8 +187,20 @@ def plot_cross_entropy_correlation(df, architecture_map):
                 model_data["experiment_name"].str.contains("LocalShuffle", na=False)
             ]
             if not local_data.empty:
+                # Average across training seeds for each window size
+                local_data_mean = (
+                    local_data.groupby(["window", "grammar_name"])
+                    .agg(
+                        {
+                            f"{n_gram}_local_entropy": "mean",
+                            "cross_entropy_per_token_base_2": "mean",
+                        }
+                    )
+                    .reset_index()
+                )
+
                 sns.scatterplot(
-                    data=local_data,
+                    data=local_data_mean,
                     x=f"{n_gram}_local_entropy",
                     y="cross_entropy_per_token_base_2",
                     hue="window",
@@ -189,7 +224,7 @@ def plot_cross_entropy_correlation(df, architecture_map):
                     ]
                 ]
                 + [
-                    local_data[
+                    local_data_mean[
                         [f"{n_gram}_local_entropy", "cross_entropy_per_token_base_2"]
                     ]
                 ]
@@ -324,6 +359,12 @@ def parse_args():
         default=["Transformer", "LSTM"],
         help="Display labels for architectures",
     )
+    parser.add_argument(
+        "--split_name",
+        type=str,
+        default="test",
+        help="Name of the split to plot",
+    )
     return parser.parse_args()
 
 
@@ -348,11 +389,14 @@ def main():
     # Create and save correlation plots
     for i, fig in enumerate(plot_cross_entropy_correlation(df, architecture_map)):
         arch = list(df["architecture"].unique())[i]
-        fig.savefig(output_dir / f"local_entropy_cross_entropy_correlation_{arch}.png")
+        fig.savefig(
+            output_dir
+            / f"local_entropy_cross_entropy_correlation_{arch}_{args.split_name}.png"
+        )
         plt.close(fig)
 
     # Create and save LaTeX table
-    with open(output_dir / "local_entropy_table.tex", "w") as f:
+    with open(output_dir / f"local_entropy_table_{args.split_name}.tex", "w") as f:
         f.write(create_latex_table(df))
 
     plt.close("all")

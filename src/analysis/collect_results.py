@@ -5,8 +5,9 @@ import re
 import argparse
 
 
-def extract_grammar_and_trial(path):
-    match = re.match(r".*?/([^/]+)_trial(\d+)/evaluation/test.json", str(path))
+def extract_grammar_and_trial(path, split_name):
+    pattern = rf".*?/([^/]+)_trial(\d+)/evaluation/{split_name}\.json"
+    match = re.match(pattern, str(path))
     if match:
         return match.group(1), int(match.group(2))
     return None, None
@@ -21,7 +22,7 @@ def collect_results(
         result_base = Path(result_base_dir) / exp_name / arch
         print(f"Collecting results for {arch} in {result_base}")
         for test_path in result_base.glob(f"*/evaluation/{split_name}.json"):
-            grammar_name, trial = extract_grammar_and_trial(test_path)
+            grammar_name, trial = extract_grammar_and_trial(test_path, split_name)
             if grammar_name is None:
                 continue
 

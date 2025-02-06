@@ -86,19 +86,30 @@ def plot_local_entropy_vs_cross_entropy(df, architecture_map):
         fig, axes = plt.subplots(1, len(ms), figsize=(5 * len(ms), 5))
 
         for i, m in enumerate(ms):
-            for trial_i in model_data["trial"].unique():
-                sns.scatterplot(
-                    data=model_data[model_data["trial"] == trial_i],
-                    x=f"{m}_local_entropy",
-                    y="cross_entropy_per_token_base_2",
-                    ax=axes[i],
-                    s=100,
-                    color="blue",
+            # Average across training seeds
+            model_data_mean = (
+                model_data.groupby("grammar_name")
+                .agg(
+                    {
+                        f"{m}_local_entropy": "mean",
+                        "cross_entropy_per_token_base_2": "mean",
+                    }
                 )
+                .reset_index()
+            )
+
+            sns.scatterplot(
+                data=model_data_mean,
+                x=f"{m}_local_entropy",
+                y="cross_entropy_per_token_base_2",
+                ax=axes[i],
+                s=100,
+                color="blue",
+            )
 
             # Add regression line
-            x = model_data[f"{m}_local_entropy"]
-            y = model_data["cross_entropy_per_token_base_2"]
+            x = model_data_mean[f"{m}_local_entropy"]
+            y = model_data_mean["cross_entropy_per_token_base_2"]
             slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
             line_x = np.array([x.min(), x.max()])
             line_y = slope * line_x + intercept
@@ -143,19 +154,30 @@ def plot_local_entropy_vs_kl_divergence(df, architecture_map):
         fig, axes = plt.subplots(1, len(ms), figsize=(5 * len(ms), 5))
 
         for i, m in enumerate(ms):
-            for trial_i in model_data["trial"].unique():
-                sns.scatterplot(
-                    data=model_data[model_data["trial"] == trial_i],
-                    x=f"{m}_local_entropy",
-                    y="KL_divergence",
-                    ax=axes[i],
-                    s=100,
-                    color="blue",
+            # Average across training seeds
+            model_data_mean = (
+                model_data.groupby("grammar_name")
+                .agg(
+                    {
+                        f"{m}_local_entropy": "mean",
+                        "KL_divergence": "mean",
+                    }
                 )
+                .reset_index()
+            )
+
+            sns.scatterplot(
+                data=model_data_mean,
+                x=f"{m}_local_entropy",
+                y="KL_divergence",
+                ax=axes[i],
+                s=100,
+                color="blue",
+            )
 
             # Add regression line
-            x = model_data[f"{m}_local_entropy"]
-            y = model_data["KL_divergence"]
+            x = model_data_mean[f"{m}_local_entropy"]
+            y = model_data_mean["KL_divergence"]
             slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
             line_x = np.array([x.min(), x.max()])
             line_y = slope * line_x + intercept
@@ -204,6 +226,12 @@ def parse_args():
         default=["Transformer", "LSTM"],
         help="Display labels for architectures",
     )
+    parser.add_argument(
+        "--split_name",
+        type=str,
+        default="test",
+        help="Name of the split to plot",
+    )
     return parser.parse_args()
 
 
@@ -237,13 +265,19 @@ def main():
     # Create and save local entropy vs cross entropy plots
     for i, fig in enumerate(plot_local_entropy_vs_cross_entropy(df, architecture_map)):
         arch = list(df["architecture"].unique())[i]
-        fig.savefig(output_dir / f"m_local_entropy_vs_cross_entropy_{arch}.png")
+        fig.savefig(
+            output_dir
+            / f"m_local_entropy_vs_cross_entropy_{arch}_{args.split_name}.png"
+        )
         plt.close(fig)
 
     # Create and save local entropy vs KL divergence plots
     for i, fig in enumerate(plot_local_entropy_vs_kl_divergence(df, architecture_map)):
         arch = list(df["architecture"].unique())[i]
-        fig.savefig(output_dir / f"m_local_entropy_vs_KL_divergence_{arch}.png")
+        fig.savefig(
+            output_dir
+            / f"m_local_entropy_vs_KL_divergence_{arch}_{args.split_name}.png"
+        )
         plt.close(fig)
 
     plt.close("all")
