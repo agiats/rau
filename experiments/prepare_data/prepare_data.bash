@@ -1,7 +1,8 @@
 set -euo pipefail
 . experiments/include.bash
 
-data_name="BLLIP_XS"
+data_name="babylm2024_100K"
+# exp_names=("local_entropy_disjoint" "local_entropy_non_disjoint")
 exp_names=("deterministic_shuffles")
 BASE_DIR="$DATA_DIR"/"$data_name"
 

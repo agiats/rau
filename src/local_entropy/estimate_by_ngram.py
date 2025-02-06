@@ -80,9 +80,11 @@ def calculate_entropy_nltk(model: MLE, sentences: list, n: int, add_eos: bool) -
         tokens = sentence.split()
         if add_eos:
             # Add BOS and EOS tokens. For example, for n=3:
-            # ['<s>', '<s>', token1, token2, ..., tokenN, '</s>']
+            # ['<s>', '<s>', token1, token2, ..., tokenN, '</s>', '</s>']
             padded_sentence = list(pad_both_ends(tokens, n))
-            for i in range(n - 1, len(padded_sentence) - n + 2):
+            for i in range(
+                n - 1, len(padded_sentence) - n + 2
+            ):  # ignore the first and last n-1 tokens (EOS/BOS)
                 context = tuple(padded_sentence[i - n + 1 : i])
                 word = padded_sentence[i]
                 prob = model.score(word, context)
@@ -116,10 +118,10 @@ def main():
         description="Calculate n-gram entropy using NLTK MLE (pure count; no smoothing/backoff) "
         + "on the combined (train+valid+test) corpus."
     )
-    parser.add_argument("train_path", type=Path, help="Path to training data file")
-    parser.add_argument("valid_path", type=Path, help="Path to validation data file")
-    parser.add_argument("test_path", type=Path, help="Path to test data file")
-    parser.add_argument("output_path", type=Path, help="Path to output CSV file")
+    parser.add_argument("--train_path", type=Path, help="Path to training data file")
+    parser.add_argument("--valid_path", type=Path, help="Path to validation data file")
+    parser.add_argument("--test_path", type=Path, help="Path to test data file")
+    parser.add_argument("--output_path", type=Path, help="Path to output CSV file")
     parser.add_argument(
         "--n",
         type=int,

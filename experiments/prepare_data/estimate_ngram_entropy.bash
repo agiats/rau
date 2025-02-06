@@ -23,12 +23,12 @@ for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
         ngram_entropy+"$data_name"+"$exp_name"+"$grammar_name" \
         cpu \
         --time=4:00:00 \
-        --mem-per-cpu=16g \
+        --mem-per-cpu=32g \
         -- \
         python local_entropy/estimate_by_ngram.py \
-            "$train_file" \
-            "$valid_file" \
-            "$test_file" \
-            "$output_file" \
+            --train_path "$train_file" \
+            --valid_path "$valid_file" \
+            --test_path "$test_file" \
+            --output_path "$output_file" \
             --n 2 3 4 5
 done

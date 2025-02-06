@@ -13,11 +13,35 @@ from functools import partial
 def ensure_spacy_model(model_name="en_core_web_sm"):
     """Ensure the required spaCy model is downloaded"""
     try:
-        nlp = spacy.load(model_name)
+        # 文分割のみを有効にする
+        nlp = spacy.load(
+            model_name,
+            disable=[
+                "tagger",
+                "parser",
+                "ner",
+                "lemmatizer",
+                "attribute_ruler",
+                "tokenizer",
+            ],
+        )
+        # 文分割の設定を調整して高速化
+        nlp.enable_pipe("senter")
     except OSError:
         print(f"Downloading spacy model {model_name}...")
         download(model_name)
-        nlp = spacy.load(model_name)
+        nlp = spacy.load(
+            model_name,
+            disable=[
+                "tagger",
+                "parser",
+                "ner",
+                "lemmatizer",
+                "attribute_ruler",
+                "tokenizer",
+            ],
+        )
+        nlp.enable_pipe("senter")
     return nlp
 
 

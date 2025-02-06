@@ -12,13 +12,15 @@ def extract_grammar_and_trial(path):
     return None, None
 
 
-def collect_results(data_dir, result_dir, exp_name, architectures, output_path):
+def collect_results(
+    data_dir, result_base_dir, exp_name, architectures, split_name, output_path
+):
     results = []
 
     for arch in architectures:
-        result_base = Path(result_dir) / exp_name / arch
-
-        for test_path in result_base.glob("**/test.json"):
+        result_base = Path(result_base_dir) / exp_name / arch
+        print(f"Collecting results for {arch} in {result_base}")
+        for test_path in result_base.glob(f"*/evaluation/{split_name}.json"):
             grammar_name, trial = extract_grammar_and_trial(test_path)
             if grammar_name is None:
                 continue
@@ -116,11 +118,20 @@ def parse_args():
         "--data_dir", type=str, required=True, help="Directory containing the PFSA data"
     )
     parser.add_argument(
-        "--result_dir", type=str, required=True, help="Directory containing the results"
+        "--result_base_dir",
+        type=str,
+        required=True,
+        help="Directory containing the results",
     )
     parser.add_argument("--exp_name", type=str, required=True, help="Experiment name")
     parser.add_argument(
         "--architectures", nargs="+", required=True, help="List of architectures"
+    )
+    parser.add_argument(
+        "--split_name",
+        type=str,
+        required=True,
+        help="Split name to collect results for",
     )
     parser.add_argument(
         "--output_path",
@@ -135,8 +146,9 @@ if __name__ == "__main__":
     args = parse_args()
     collect_results(
         data_dir=args.data_dir,
-        result_dir=args.result_dir,
+        result_base_dir=args.result_base_dir,
         exp_name=args.exp_name,
         architectures=args.architectures,
+        split_name=args.split_name,
         output_path=args.output_path,
     )
