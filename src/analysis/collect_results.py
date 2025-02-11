@@ -14,7 +14,13 @@ def extract_grammar_and_trial(path, split_name):
 
 
 def collect_results(
-    data_dir, result_base_dir, exp_name, architectures, split_name, output_path
+    data_dir,
+    result_base_dir,
+    exp_name,
+    architectures,
+    split_name,
+    output_path,
+    metadata_filename,
 ):
     results = []
 
@@ -26,7 +32,7 @@ def collect_results(
             if grammar_name is None:
                 continue
 
-            metadata_path = Path(data_dir) / exp_name / grammar_name / "metadata.json"
+            metadata_path = Path(data_dir) / exp_name / grammar_name / metadata_filename
 
             try:
 
@@ -140,6 +146,12 @@ def parse_args():
         required=True,
         help="Path to save the collected results",
     )
+    parser.add_argument(
+        "--metadata_filename",
+        type=str,
+        default="metadata.json",
+        help="Name of the metadata file (default: metadata.json)",
+    )
     return parser.parse_args()
 
 
@@ -152,4 +164,5 @@ if __name__ == "__main__":
         architectures=args.architectures,
         split_name=args.split_name,
         output_path=args.output_path,
+        metadata_filename=args.metadata_filename,
     )

@@ -3,7 +3,7 @@ set -euo pipefail
 
 # data_name="PFSA"
 # exp_names=("local_entropy_disjoint" "local_entropy_non_disjoint")
-data_name="babylm2024_100K"
+data_name="BLLIP_SM"
 exp_names=("deterministic_shuffles")
 
 exp_base_dir="$DATA_DIR"/"$data_name"
@@ -23,6 +23,7 @@ for split_name in "${split_names[@]}"; do
             --exp_name "$exp_name" \
             --architectures "${ARCHITECTURES[@]}" \
             --split_name "$split_name" \
-            --output_path "$OUTPUT_PATH"
+            --output_path "$OUTPUT_PATH" \
+            --metadata_filename "metadata.json"
     done
 done
