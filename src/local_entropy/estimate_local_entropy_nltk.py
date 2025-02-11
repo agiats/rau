@@ -8,7 +8,7 @@ from tqdm import tqdm
 import numpy as np
 from functools import partial
 
-from nltk.lm import Lidstone, MLE
+from nltk.lm import Lidstone, MLE, KneserNeyInterpolated
 from nltk.util import ngrams, pad_sequence
 from local_entropy.ngram_util import padded_everygram_pipeline, pad_both_ends, pad_eos
 
@@ -80,6 +80,8 @@ def train_ngram_model(
         if gamma is None:
             raise ValueError("gamma parameter must be specified for Lidstone smoothing")
         model = Lidstone(gamma, n)
+    elif method == "KneserNey":
+        model = KneserNeyInterpolated(n, discount=0.1)
     else:
         raise ValueError(f"Unknown estimation method: {method}")
 
@@ -89,7 +91,7 @@ def train_ngram_model(
 
 
 def calculate_entropy_nltk(
-    model: Union[MLE, Lidstone],
+    model: Union[MLE, Lidstone, KneserNeyInterpolated],
     tokenized_sentences: List[List[str]],
     n: int,
     add_bos: bool = False,
@@ -146,7 +148,7 @@ def main():
     parser.add_argument(
         "--method",
         type=str,
-        choices=["MLE", "Laplace", "Lidstone"],
+        choices=["MLE", "Laplace", "Lidstone", "KneserNey"],
         default="MLE",
         help="Probability estimation method (default: MLE)",
     )
