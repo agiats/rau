@@ -1,10 +1,11 @@
 set -euo pipefail
 . experiments/include.bash
 
-data_name="babylm2024_100K"
-# exp_names=("local_entropy_disjoint" "local_entropy_non_disjoint")
-exp_names=("deterministic_shuffles")
+data_name="PFSA"
+exp_names=("local_entropy_non_disjoint_larger_m")
+# exp_names=("deterministic_shuffles")
 BASE_DIR="$DATA_DIR"/"$data_name"
+mem_per_cpu=16g
 
 for exp_name in "${exp_names[@]}"; do
     for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
@@ -15,7 +16,7 @@ for exp_name in "${exp_names[@]}"; do
             mv "$grammar_dir"/train.txt "$grammar_dir"/main.tok
         fi
         if [ ! -f "$grammar_dir"/datasets/validation/main.tok ]; then
-            mv "$grammar_dir"/dev.txt "$grammar_dir"/datasets/validation/main.tok
+            mv "$grammar_dir"/val.txt "$grammar_dir"/datasets/validation/main.tok
         fi
         if [ ! -f "$grammar_dir"/datasets/test/main.tok ]; then
             mv "$grammar_dir"/test.txt "$grammar_dir"/datasets/test/main.tok
@@ -25,6 +26,7 @@ for exp_name in "${exp_names[@]}"; do
         prepare_data+"$data_name"+"$exp_name"+"$grammar_name" \
         cpu \
         --time=4:00:00 \
+        --mem-per-cpu="$mem_per_cpu" \
         -- \
         python "$RAU_DIR"/src/rau/tasks/language_modeling/prepare_data.py \
             --training-data "$grammar_dir" \

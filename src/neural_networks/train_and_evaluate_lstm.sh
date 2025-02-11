@@ -5,6 +5,7 @@ set -euo pipefail
 data_dir="$1"
 output_dir="$2"
 examples_per_checkpoint="$3"
+max_tokens_per_batch="$4"
 
 python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --training-data "$data_dir" \
@@ -14,7 +15,7 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --dropout 0.1 \
     --init-scale 0.1 \
     --max-epochs 1000 \
-    --max-tokens-per-batch 2048 \
+    --max-tokens-per-batch "$max_tokens_per_batch" \
     --optimizer Adam \
     --initial-learning-rate 0.0005 \
     --gradient-clipping-threshold 5 \

@@ -1,11 +1,14 @@
 set -euo pipefail
 . experiments/include.bash
 
-data_name="babylm2024_100K"
-# exp_names=("local_entropy_disjoint" "local_entropy_non_disjoint")
-exp_names=("deterministic_shuffles")
+data_name="PFSA"
+exp_names=("local_entropy_non_disjoint")
+# exp_names=("deterministic_shuffles")
 exp_base_dir="$DATA_DIR"/"$data_name"
 examples_per_checkpoint=10000
+max_tokens_per_batch=2048
+time_limit=48:00:00
+gpu_mem=10g
 
 for exp_name in "${exp_names[@]}"; do
     for trial in $(seq 0 $(($NUM_TRIALS - 1))); do
@@ -15,15 +18,16 @@ for exp_name in "${exp_names[@]}"; do
             train_lstm+"$data_name"+"$exp_name"+"$grammar_name"+trial"$trial" \
             gpu \
             --gpus=1 \
+            --gres=gpumem:"$gpu_mem" \
             --mem-per-cpu=16g \
-            --gres=gpumem:20g \
             --tmp=20g \
-            --time=4:00:00 \
+            --time="$time_limit" \
             -- \
             bash neural_networks/train_and_evaluate_lstm.sh \
                 "$data_dir" \
                 "$RESULTS_DIR"/"$data_name"/"$exp_name"/lstm/"$grammar_name"_trial"$trial" \
-                "$examples_per_checkpoint"
+                "$examples_per_checkpoint" \
+                "$max_tokens_per_batch"
         done
     done
 done
