@@ -301,7 +301,7 @@ def create_latex_table(df):
     )
 
     other_exps_mask = df["grammar_name"].str.contains(
-        "Base|EvenOddShuffle|Reverse|DeterministicShuffle"
+        "Base|EvenOddShuffle|Reverse|DeterministicShuffle|OddEvenShuffle"
     )
     other_exps = (
         df[other_exps_mask]
