@@ -27,7 +27,8 @@ for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
         --output_path "$output_file" \
         --n 2 3 4 5 \
         --memory 8G \
-         --num-processes 1 \
+        --num-processes 1 \
+        --method mlocal_entropy \
         --work-dir "work/${data_name}_${exp_name}_${grammar_name}"
 done
 

@@ -28,19 +28,35 @@ def load_data(train_path: Path, valid_path: Path, test_path: Path, add_eos: bool
 
     return all_sentences
 
-def calculate_entropy_with_kenlm(model, text, add_eos: bool = True):
-    need_eos_for_model = not add_eos
+def calculate_entropy(model, text):
     log_prob_sum = 0
     word_count = 0
 
     for line in text:
-        log_prob_sum += model.score(line, eos=need_eos_for_model) * math.log2(10)
+        log_prob_sum += model.score(line, bos=True, eos=True) * math.log2(10)
         word_count += len(line.split()) + 1
 
     return -1 * (log_prob_sum / word_count)
 
+def caculate_mlocal_entropy(model, text, n: int):
+    total_local_entropy = 0
+    denominator = 0
+
+    for line in text:
+        words = ['<s>'] + line.split() + ['</s>']
+        scores = list(model.full_scores(words))
+        valid_scores = scores[n - 1 :]
+        if len(valid_scores) == 0:
+            continue
+        for prob, _, _ in valid_scores:
+            local_entropy = -prob * math.log2(10)
+            total_local_entropy += local_entropy
+            denominator += 1
+
+    return total_local_entropy / denominator if denominator > 0 else float('inf')
+
 def process_single_n(args):
-    work_file_path, n, lmplz_path, sentences, memory, add_eos = args
+    work_file_path, n, lmplz_path, sentences, memory, method = args
     arpa_path = work_file_path.with_suffix(f'.{n}.arpa')
 
     try:
@@ -59,8 +75,12 @@ def process_single_n(args):
         ], check=True)
 
         model = kenlm.Model(str(arpa_path))
-
-        entropy = calculate_entropy_with_kenlm(model, sentences, add_eos=add_eos)
+        if method == 'entropy':
+            entropy = calculate_entropy(model, sentences)
+        elif method == 'mlocal_entropy':
+            entropy = caculate_mlocal_entropy(model, sentences, n)
+        else:
+            raise ValueError(f"Invalid method: {method}")
         return n, entropy
 
     except Exception as e:
@@ -90,6 +110,8 @@ def main():
                        help='Do not add [eos] token at the end of sentences')
     parser.add_argument('--output_path', type=Path, required=True,
                        help='Path to output JSON file')
+    parser.add_argument('--method', type=str, default='mlocal_entropy',
+                       help='Method to calculate mlocal_entropy (default: mlocal_entropy)')
     args = parser.parse_args()
 
     print("Loading datasets...")
@@ -109,7 +131,7 @@ def main():
     num_processes = args.num_processes or cpu_count()
     print(f"Using {num_processes} processes")
 
-    process_args = [(work_file_path, n, lmplz_path, sentences, args.memory, args.add_eos)
+    process_args = [(work_file_path, n, lmplz_path, sentences, args.memory, args.method)
                    for n in args.n]
     with Pool(num_processes) as pool:
         model_results = pool.map(process_single_n, process_args)
