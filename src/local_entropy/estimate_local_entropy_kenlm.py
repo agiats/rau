@@ -9,7 +9,7 @@ import pandas as pd
 from pathlib import Path
 from multiprocessing import Pool, cpu_count
 
-def load_data(train_path: Path, valid_path: Path, test_path: Path, add_eos: bool = True) -> list:
+def load_data(train_path: Path, valid_path: Path, test_path: Path) -> list:
     """
     Load sentences from specified files for train, validation, and test.
     Each line is treated as a sentence.
@@ -22,8 +22,6 @@ def load_data(train_path: Path, valid_path: Path, test_path: Path, add_eos: bool
     for path in paths:
         with path.open('r') as f:
             sentences = f.read().splitlines()
-            if add_eos:
-                sentences = [f"{s} [eos]".strip() for s in sentences]
             all_sentences.extend(sentences)
 
     return all_sentences
@@ -43,11 +41,11 @@ def caculate_mlocal_entropy(model, text, n: int):
     denominator = 0
 
     for line in text:
-        words = ['<s>'] + line.split() + ['</s>']
-        scores = list(model.full_scores(words))
+        scores = list(model.full_scores(line))
         valid_scores = scores[n - 1 :]
         if len(valid_scores) == 0:
             continue
+        assert len(valid_scores) == len(line.split()) - n + 2, f"{len(valid_scores)} != {len(line.split()) - n + 2}"
         for prob, _, _ in valid_scores:
             local_entropy = -prob * math.log2(10)
             total_local_entropy += local_entropy
@@ -106,8 +104,6 @@ def main():
                        help='Memory limit for KenLM (default: 4G)')
     parser.add_argument('--work-dir', type=str, default='work',
                        help='Working directory for intermediate files')
-    parser.add_argument('--no-eos', action='store_false', dest='add_eos',
-                       help='Do not add [eos] token at the end of sentences')
     parser.add_argument('--output_path', type=Path, required=True,
                        help='Path to output JSON file')
     parser.add_argument('--method', type=str, default='mlocal_entropy',
@@ -115,7 +111,7 @@ def main():
     args = parser.parse_args()
 
     print("Loading datasets...")
-    sentences = load_data(args.train_path, args.valid_path, args.test_path, add_eos=args.add_eos)
+    sentences = load_data(args.train_path, args.valid_path, args.test_path)
 
     work_dir = Path(args.work_dir)
     work_dir.mkdir(parents=True, exist_ok=True)
@@ -137,6 +133,7 @@ def main():
         model_results = pool.map(process_single_n, process_args)
 
     final_results = {"local_entropy": {}}
+    print(model_results)
     for n, entropy in model_results:
         if entropy is not None:
             final_results["local_entropy"][str(n)] = entropy
