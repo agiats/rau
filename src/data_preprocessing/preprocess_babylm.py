@@ -13,7 +13,6 @@ from functools import partial
 def ensure_spacy_model(model_name="en_core_web_sm"):
     """Ensure the required spaCy model is downloaded"""
     try:
-        # 文分割のみを有効にする
         nlp = spacy.load(
             model_name,
             disable=[
@@ -25,7 +24,6 @@ def ensure_spacy_model(model_name="en_core_web_sm"):
                 "tokenizer",
             ],
         )
-        # 文分割の設定を調整して高速化
         nlp.enable_pipe("senter")
     except OSError:
         print(f"Downloading spacy model {model_name}...")
@@ -118,9 +116,7 @@ def process_text_file(input_file, output_file, nlp, min_length=5):
     with open(input_file, "r", encoding="utf-8") as f_in, open(
         output_file, "w", encoding="utf-8"
     ) as f_out:
-        # 行ごとに処理
         for line in f_in:
-            # コーパス特有の前処理
             if is_childes:
                 line = preprocess_childes_line(line)
             elif is_switchboard:
@@ -130,11 +126,8 @@ def process_text_file(input_file, output_file, nlp, min_length=5):
                 continue
 
             doc = nlp(line.strip())
-            # 文ごとに処理
             for sent in doc.sents:
-                # 各トークンを取得（空白文字は除外）
                 tokens = [token.text for token in sent if not token.is_space]
-                # 最小長を満たす場合のみ出力
                 if tokens and len(tokens) >= min_length:
                     f_out.write(" ".join(tokens) + "\n")
 

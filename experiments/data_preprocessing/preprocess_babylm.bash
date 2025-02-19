@@ -14,13 +14,14 @@ for corpus_path in "$data_dir"/*; do
         cpu \
         --mem-per-cpu="$mem_per_cpu" \
         --time=48:00:00 \
+        --tasks 10 \
         -- \
-        python data_preprocessing/preprocess_babylm_fix.py \
+        python data_preprocessing/preprocess_babylm.py \
         --input_file "$corpus_path" \
         --output_path "$dst_path" \
         --min-length 2 \
         --spacy-model en_core_web_lg \
-        --batch-size 10000
+        --n-jobs 10
 done
 
 
