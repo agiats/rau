@@ -1,3 +1,0 @@
-[submodule "src/rau"]
-	path = src/rau
-	url = git@github.com:bdusell/rau.git
