@@ -1,37 +1,29 @@
 set -euo pipefail
 . experiments/include.bash
 
-raw_dir="$DATA_DIR"/babylm2024_raw
-dst_dir="$DATA_DIR"/babylm2024_100M/deterministic_shuffles/Base
-n_jobs=6
-mem_per_cpu=64g
+data_dir="$DATA_DIR"/babylm2024_raw/test
+mem_per_cpu=32g
 
-declare -a src_dst_pair=(
-    "train_100M train.txt"
-    # "train_10M train.txt"
-    # "dev dev.txt"
-    # "test test.txt"
-    # "small small.txt"
-)
 
-for pair in "${src_dst_pair[@]}"; do
-    src_name=$(echo $pair | awk '{print $1}')
-    dst_name=$(echo $pair | awk '{print $2}')
-
-    src_dir="$raw_dir"/"$src_name"
-    dst_path="$dst_dir"/"$dst_name"
+for corpus_path in "$data_dir"/*; do
+    corpus_name=$(basename "$corpus_path")
+    dst_path="$data_dir"/"$corpus_name".txt
 
     submit_job \
-    preprocess_babylm+"$(basename "$raw_dir")"+"$src_name" \
-    cpu \
-    --tasks="$n_jobs" \
-    --mem-per-cpu="$mem_per_cpu" \
-    --time=4:00:00 \
-    -- \
-    python data_preprocessing/preprocess_babylm.py \
-    --input_dir "$src_dir" \
-    --output_path "$dst_path" \
-    --min-length 2 \
-    --spacy-model en_core_web_lg \
-    --n-jobs "$n_jobs"
+        preprocess_babylm+"$corpus_name" \
+        cpu \
+        --mem-per-cpu="$mem_per_cpu" \
+        --time=48:00:00 \
+        -- \
+        python data_preprocessing/preprocess_babylm_fix.py \
+        --input_file "$corpus_path" \
+        --output_path "$dst_path" \
+        --min-length 2 \
+        --spacy-model en_core_web_lg \
+        --batch-size 10000
 done
+
+
+# merge files
+# dst_path="$DATA_DIR"/babylm2024_100M/deterministic_shuffles/Base/train.txt
+# cat "$data_dir"/*.txt > "$dst_path"

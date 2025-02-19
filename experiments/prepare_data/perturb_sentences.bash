@@ -2,15 +2,14 @@ set -euo pipefail
 . experiments/include.bash
 
 exp_name="deterministic_shuffles"
-data_name="babylm2024_100K"
+data_name="BLLIP_MD_longer_than_10"
 EXP_DIR="$DATA_DIR"/"$data_name"/"$exp_name"
 BASE_DIR="$EXP_DIR"/Base
-
 
 SPLIT_CONFIG_DIR="$RESULTS_DIR"/"$data_name"/"$exp_name"/split_configs
 mkdir -p "$SPLIT_CONFIG_DIR"
 
-N_SPLITS=40
+N_SPLITS=70
 python src/perturbation/split_config.py \
     "$PERTURBATION_CONFIG_FILE" \
     "$SPLIT_CONFIG_DIR" \
@@ -22,7 +21,8 @@ for config_file in "$SPLIT_CONFIG_DIR"/config_*.json; do
     submit_job \
         "perturb_sentences+${data_name}+${exp_name}+${job_suffix}" \
         cpu \
-        --tasks=16 \
+        --tasks=48 \
+        --mem-per-cpu=8g \
         --time=8:00:00 \
         -- \
         python perturbation/perturb_sentences.py \
@@ -31,7 +31,7 @@ for config_file in "$SPLIT_CONFIG_DIR"/config_*.json; do
         --base_test_file "$BASE_DIR"/test.txt \
         --exp_dir "$EXP_DIR" \
         --perturb_config_file "$config_file" \
-        --n_workers 16
+        --n_workers 48
 done
 
 

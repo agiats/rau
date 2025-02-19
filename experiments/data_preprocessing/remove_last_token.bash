@@ -2,7 +2,7 @@ set -euo pipefail
 . experiments/include.bash
 
 data_name="PFSA"
-exp_names=("local_entropy_disjoint" "local_entropy_non_disjoint")
+exp_names=("local_entropy_non_disjoint_larger_m")
 BASE_DIR="$DATA_DIR"/"$data_name"
 
 for exp_name in "${exp_names[@]}"; do
@@ -14,7 +14,7 @@ for exp_name in "${exp_names[@]}"; do
         echo "number_to_remove: $number_to_remove"
 
         if [ -n "$number_to_remove" ]; then
-            for target in "main.tok" "datasets/validation/main.tok" "datasets/test/main.tok"; do
+            for target in "train.txt" "val.txt" "test.txt"; do
                 target_file="$grammar_dir"/"$target"
                 sed -i -E "s/(^|[[:space:]])$number_to_remove$//g" "$target_file"
             done

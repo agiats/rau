@@ -42,6 +42,7 @@ def collect_results(
                 with open(metadata_path) as f:
                     metadata = json.load(f)
 
+                # Create base result dictionary without local entropy
                 result = {
                     "grammar_name": grammar_name,
                     "trial": trial,
@@ -67,19 +68,28 @@ def collect_results(
                         if "next_symbol_entropy" in metadata
                         else None
                     ),
-                    "2_local_entropy": metadata["local_entropy"]["2"],
-                    "3_local_entropy": metadata["local_entropy"]["3"],
-                    "4_local_entropy": metadata["local_entropy"]["4"],
-                    "5_local_entropy": metadata["local_entropy"]["5"],
-                    "cross_entropy_per_token": test_results["cross_entropy_per_token"],
-                    "perplexity": test_results["perplexity"],
-                    "cross_entropy_per_token_base_e": test_results[
-                        "cross_entropy_per_token_base_e"
-                    ],
-                    "cross_entropy_per_token_base_2": test_results[
-                        "cross_entropy_per_token_base_2"
-                    ],
                 }
+
+                # Add local entropy values dynamically
+                if "local_entropy" in metadata:
+                    for m, value in metadata["local_entropy"].items():
+                        result[f"{m}_local_entropy"] = value
+
+                # Add test results
+                result.update(
+                    {
+                        "cross_entropy_per_token": test_results[
+                            "cross_entropy_per_token"
+                        ],
+                        "perplexity": test_results["perplexity"],
+                        "cross_entropy_per_token_base_e": test_results[
+                            "cross_entropy_per_token_base_e"
+                        ],
+                        "cross_entropy_per_token_base_2": test_results[
+                            "cross_entropy_per_token_base_2"
+                        ],
+                    }
+                )
 
                 results.append(result)
 
@@ -92,7 +102,9 @@ def collect_results(
 
     if results:
         df = pd.DataFrame(results)
-        columns = [
+
+        # Dynamically create column list
+        base_columns = [
             "grammar_name",
             "trial",
             "architecture",
@@ -103,15 +115,22 @@ def collect_results(
             "mean_length",
             "entropy",
             "next_symbol_entropy",
-            "2_local_entropy",
-            "3_local_entropy",
-            "4_local_entropy",
-            "5_local_entropy",
+        ]
+
+        # Add local entropy columns in order
+        local_entropy_columns = sorted(
+            [col for col in df.columns if col.endswith("_local_entropy")],
+            key=lambda x: int(x.split("_")[0]),
+        )
+
+        metric_columns = [
             "cross_entropy_per_token",
             "perplexity",
             "cross_entropy_per_token_base_e",
             "cross_entropy_per_token_base_2",
         ]
+
+        columns = base_columns + local_entropy_columns + metric_columns
         df = df[columns]
         df.to_csv(output_path, index=False)
         print(f"Results saved to {output_path}")

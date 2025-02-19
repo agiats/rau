@@ -3,9 +3,9 @@ set -euo pipefail
 
 
 data_name="PFSA"
-exp_names=("local_entropy_disjoint" "local_entropy_non_disjoint")
+exp_names=("local_entropy_non_disjoint_larger_m")
 exp_base_dir="$DATA_DIR"/"$data_name"
-split_names=("test")
+split_names=("test" "validation")
 for split_name in "${split_names[@]}"; do
     for exp_name in "${exp_names[@]}"; do
         RESULTS_PATH="${RESULTS_DIR}"/"$data_name"/"$exp_name"/collected_results_"$split_name".csv

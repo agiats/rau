@@ -2,7 +2,7 @@ set -euo pipefail
 . experiments/include.bash
 
 src_dir="$DATA_DIR"/babylm2024_10M/deterministic_shuffles/Base
-dst_dir="$DATA_DIR"/babylm2024_100K/deterministic_shuffles/Base
+dst_dir="$DATA_DIR"/babylm2024_100K_sents/deterministic_shuffles/Base
 train_sample_size=100000
 dev_sample_size=10000
 test_sample_size=10000
@@ -11,7 +11,6 @@ targets=("main.tok" "datasets/validation/main.tok" "datasets/test/main.tok")
 
 for target in "${targets[@]}"; do
     src_path="$src_dir"/"$target"
-
 
 
     # ファイルタイプに応じてサンプルサイズを設定
