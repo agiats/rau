@@ -167,3 +167,6 @@ logs
 *.err
 *.out
 work/
+R
+.Rproj.user
+papers_slides
