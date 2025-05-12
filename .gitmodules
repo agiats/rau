@@ -1,3 +1,7 @@
 
 
 
+[submodule "src/rau"]
+	path = src/rau
+	url = https://github.com/agiats/rau.git
+	branch = differentiable-stacks
