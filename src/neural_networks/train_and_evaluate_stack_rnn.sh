@@ -12,7 +12,7 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --architecture stack-rnn \
     --num-layers 1 \
     --stack-rnn-controller lstm \
-    --stack-rnn-stack vector-nondeterministic-3-3-5 \
+    --stack-rnn-stack superposition-20 \
     --hidden-units 20 \
     --dropout 0.1 \
     --init-scale 0.1 \

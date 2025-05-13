@@ -10,10 +10,10 @@ max_tokens_per_batch="$4"
 python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --training-data "$data_dir" \
     --architecture stack-transformer \
-    --d-model 28 \
+    --d-model 32 \
     --num-heads 4 \
-    --feedforward-size 56 \
-    --stack-transformer-layers "2.nondeterministic-3-3-5.2" \
+    --feedforward-size 64 \
+    --stack-transformer-layers "2.superposition-32.2" \
     --dropout 0.1 \
     --init-scale 0.1 \
     --max-epochs 1000 \
@@ -42,8 +42,8 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/evaluate.py \
     --input validation \
     --batching-max-tokens 2048 > "$eval_dir"/validation.json
 
-python src/evaluate/add_base2_metrics.py \
-    --input-path "$eval_dir"/test.json
+python evaluate/add_base2_metrics.py \
+    --input_path "$eval_dir"/test.json
 
-python src/evaluate/add_base2_metrics.py \
-    --input-path "$eval_dir"/validation.json
+python evaluate/add_base2_metrics.py \
+    --input_path "$eval_dir"/validation.json

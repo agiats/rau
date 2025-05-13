@@ -20,18 +20,18 @@ examples_per_checkpoint=40000
 max_tokens_per_batch=2048
 time_limit=04:00:00
 gpu_mem=20g
-model_name="stack-transformer_nondeterministic"
+model_name="stack-transformer_32-2.superposition-32.2"
 
 
 for exp_name in "${exp_names[@]}"; do
     for trial in $(seq 0 $(($NUM_TRIALS - 1))); do
         for data_dir in "$exp_base_dir"/"$exp_name"/*; do
             grammar_name=$(basename "$data_dir")
-            if [ -f "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"/evaluation/validation.json ]; then
-                continue
-            fi
-            # echo "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"
-            rm -rf "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"
+            # if [ -f "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"/evaluation/validation.json ]; then
+            #     continue
+            # fi
+            # # echo "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"
+            # rm -rf "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"
 
             submit_job \
             train_"$model_name"+"$data_name"+"$exp_name"+"$grammar_name"+trial"$trial" \
