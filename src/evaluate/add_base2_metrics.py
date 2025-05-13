@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import math
+import argparse
 
 
 def add_base2_metrics(input_path: Path):
@@ -20,3 +21,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     add_base2_metrics(args.input_path)
+    print(f"Added base2 metrics to {args.input_path}")

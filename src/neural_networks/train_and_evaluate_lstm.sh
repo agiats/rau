@@ -40,8 +40,8 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/evaluate.py \
     --input validation \
     --batching-max-tokens 2048 > "$eval_dir"/validation.json
 
-python src/evaluate/add_base2_metrics.py \
-    --input-path "$eval_dir"/test.json
+python evaluate/add_base2_metrics.py \
+    --input_path "$eval_dir"/test.json
 
-python src/evaluate/add_base2_metrics.py \
-    --input-path "$eval_dir"/validation.json
+python evaluate/add_base2_metrics.py \
+    --input_path "$eval_dir"/validation.json
