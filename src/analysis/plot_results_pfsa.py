@@ -444,6 +444,126 @@ def plot_string_global_entropy_vs_kl_divergence(df, architecture_map):
         yield fig
 
 
+def plot_XXX_vs_cross_entropy(df, architecture_map):
+    """Plot XXX vs cross entropy with regression lines for each architecture."""
+    # Plot for each architecture
+    for architecture in df["architecture"].unique():
+        # Get data for this architecture
+        model_data = df[df["architecture"] == architecture]
+
+        # Create subplot
+        fig, ax = plt.subplots(figsize=(8, 6))
+
+        # Average across training seeds
+        model_data_mean = (
+            model_data.groupby("grammar_name")
+            .agg(
+                {
+                    "XXX": "mean",
+                    "cross_entropy_per_token_base_2": "mean",
+                }
+            )
+            .reset_index()
+        )
+
+        sns.scatterplot(
+            data=model_data_mean,
+            x="XXX",
+            y="cross_entropy_per_token_base_2",
+            ax=ax,
+            s=100,
+            color="blue",
+        )
+
+        # Add regression line
+        x = model_data_mean["XXX"]
+        y = model_data_mean["cross_entropy_per_token_base_2"]
+        slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+        line_x = np.array([x.min(), x.max()])
+        line_y = slope * line_x + intercept
+        ax.plot(line_x, line_y, color="red", linestyle="--", alpha=0.3)
+
+        # Add R² value
+        r_squared = r_value**2
+        ax.text(
+            0.05,
+            0.95,
+            f"R² = {r_squared:.3f}",
+            transform=ax.transAxes,
+            verticalalignment="top",
+            fontsize=14,
+        )
+
+        ax.set_xlabel("XXX", fontsize=16)
+        ax.set_ylabel("Cross Entropy", fontsize=16)
+        ax.grid(True, alpha=0.3)
+
+        plt.suptitle(f"{architecture_map[architecture]}", fontsize=20, y=0.95)
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+
+        yield fig
+
+
+def plot_XXX_vs_kl_divergence(df, architecture_map):
+    """Plot XXX vs KL divergence with regression lines for each architecture."""
+    # Plot for each architecture
+    for architecture in df["architecture"].unique():
+        # Get data for this architecture
+        model_data = df[df["architecture"] == architecture]
+
+        # Create subplot
+        fig, ax = plt.subplots(figsize=(8, 6))
+
+        # Average across training seeds
+        model_data_mean = (
+            model_data.groupby("grammar_name")
+            .agg(
+                {
+                    "XXX": "mean",
+                    "KL_divergence": "mean",
+                }
+            )
+            .reset_index()
+        )
+
+        sns.scatterplot(
+            data=model_data_mean,
+            x="XXX",
+            y="KL_divergence",
+            ax=ax,
+            s=100,
+            color="blue",
+        )
+
+        # Add regression line
+        x = model_data_mean["XXX"]
+        y = model_data_mean["KL_divergence"]
+        slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+        line_x = np.array([x.min(), x.max()])
+        line_y = slope * line_x + intercept
+        ax.plot(line_x, line_y, color="red", linestyle="--", alpha=0.3)
+
+        # Add R² value
+        r_squared = r_value**2
+        ax.text(
+            0.05,
+            0.95,
+            f"R² = {r_squared:.3f}",
+            transform=ax.transAxes,
+            verticalalignment="top",
+            fontsize=14,
+        )
+
+        ax.set_xlabel("XXX", fontsize=16)
+        ax.set_ylabel("KL Divergence", fontsize=16)
+        ax.grid(True, alpha=0.3)
+
+        plt.suptitle(f"{architecture_map[architecture]}", fontsize=20, y=0.95)
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+
+        yield fig
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Plot entropy analysis results")
     parser.add_argument(
@@ -561,6 +681,28 @@ def main():
         fig.savefig(
             output_dir
             / f"string_global_entropy_vs_KL_divergence_{arch}_{args.split_name}.png"
+        )
+        plt.close(fig)
+
+    # Create and save XXX vs cross entropy plots
+    for i, fig in enumerate(
+        plot_XXX_vs_cross_entropy(df, architecture_map)
+    ):
+        arch = list(df["architecture"].unique())[i]
+        fig.savefig(
+            output_dir
+            / f"XXX_vs_cross_entropy_{arch}_{args.split_name}.png"
+        )
+        plt.close(fig)
+
+    # Create and save XXX vs KL divergence plots
+    for i, fig in enumerate(
+        plot_XXX_vs_kl_divergence(df, architecture_map)
+    ):
+        arch = list(df["architecture"].unique())[i]
+        fig.savefig(
+            output_dir
+            / f"XXX_vs_KL_divergence_{arch}_{args.split_name}.png"
         )
         plt.close(fig)
 

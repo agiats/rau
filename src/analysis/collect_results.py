@@ -68,12 +68,25 @@ def collect_results(
                         if "next_symbol_entropy" in metadata
                         else None
                     ),
+                    "XXX": (
+                        metadata["XXX"] if "XXX" in metadata else None
+                    ),
                 }
 
                 # Add local entropy values dynamically
                 if "local_entropy" in metadata:
                     for m, value in metadata["local_entropy"].items():
                         result[f"{m}_local_entropy"] = value
+
+                # Add prefix_local_entropy values dynamically
+                if "prefix_local_entropy" in metadata:
+                    for m, value in metadata["prefix_local_entropy"].items():
+                        result[f"{m}_prefix_local_entropy"] = value
+
+                # Add time_indexed_MI values dynamically
+                if "time_indexed_MI" in metadata:
+                    for m, value in metadata["time_indexed_MI"].items():
+                        result[f"{m}_time_indexed_MI"] = value
 
                 # Add test results
                 result.update(
@@ -115,11 +128,24 @@ def collect_results(
             "mean_length",
             "entropy",
             "next_symbol_entropy",
+            "XXX",
         ]
 
         # Add local entropy columns in order
         local_entropy_columns = sorted(
             [col for col in df.columns if col.endswith("_local_entropy")],
+            key=lambda x: int(x.split("_")[0]),
+        )
+
+        # Add prefix_local_entropy columns in order
+        prefix_local_entropy_columns = sorted(
+            [col for col in df.columns if col.endswith("_prefix_local_entropy")],
+            key=lambda x: int(x.split("_")[0]),
+        )
+
+        # Add time_indexed_MI columns in order
+        time_indexed_mi_columns = sorted(
+            [col for col in df.columns if col.endswith("_time_indexed_MI")],
             key=lambda x: int(x.split("_")[0]),
         )
 
@@ -130,7 +156,7 @@ def collect_results(
             "cross_entropy_per_token_base_2",
         ]
 
-        columns = base_columns + local_entropy_columns + metric_columns
+        columns = base_columns + local_entropy_columns + prefix_local_entropy_columns + time_indexed_mi_columns + metric_columns
         df = df[columns]
         df.to_csv(output_path, index=False)
         print(f"Results saved to {output_path}")
