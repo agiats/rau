@@ -1,8 +1,17 @@
+# !/bin/bash
+# SBATCH --job-name=remove_last_token
+# SBATCH --output=/cluster/home/tsomeya/projects/lm_inductive_bias/logs/remove_last_token.out
+# SBATCH --error=/cluster/home/tsomeya/projects/lm_inductive_bias/logs/remove_last_token.err
+# SBATCH --time=04:00:00  # Adjust time as needed
+# SBATCH --mem-per-cpu=4G         # Adjust memory as needed
+# SBATCH --tmp=20g
+# SBATCH --cpus-per-task=1  # Adjust CPU as needed
+
 set -euo pipefail
 . experiments/include.bash
 
 data_name="PFSA"
-exp_names=("local_entropy_non_disjoint_larger_m")
+exp_names=("local_entropy_XXX_only")
 BASE_DIR="$DATA_DIR"/"$data_name"
 
 for exp_name in "${exp_names[@]}"; do

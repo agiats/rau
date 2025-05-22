@@ -21,7 +21,7 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --optimizer Adam \
     --initial-learning-rate 0.0005 \
     --gradient-clipping-threshold 5 \
-    --early-stopping-patience 10 \
+    --early-stopping-patience 5 \
     --learning-rate-patience 5 \
     --learning-rate-decay-factor 0.5 \
     --examples-per-checkpoint "$examples_per_checkpoint" \
@@ -42,8 +42,8 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/evaluate.py \
     --input validation \
     --batching-max-tokens 2048 > "$eval_dir"/validation.json
 
-python src/evaluate/add_base2_metrics.py \
-    --input-path "$eval_dir"/test.json
+python evaluate/add_base2_metrics.py \
+    --input_path "$eval_dir"/test.json
 
-python src/evaluate/add_base2_metrics.py \
-    --input-path "$eval_dir"/validation.json
+python evaluate/add_base2_metrics.py \
+    --input_path "$eval_dir"/validation.json

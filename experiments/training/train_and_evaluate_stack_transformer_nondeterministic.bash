@@ -12,25 +12,25 @@ set -euo pipefail
 . experiments/include.bash
 
 data_name="PFSA"
-exp_names=("local_entropy_XXX")
+exp_names=("local_entropy_XXX_only")
 # data_name="babylm2024_10M_fixed"
 # exp_names=("deterministic_shuffles")
 exp_base_dir="$DATA_DIR"/"$data_name"
 examples_per_checkpoint=40000
 max_tokens_per_batch=2048
-time_limit=04:00:00
-gpu_mem=20g
-model_name="stack-transformer_32-2.superposition-32.2"
+time_limit=24:00:00
+gpu_mem=10g
+model_name="stack-transformer_768-2.superposition-64.2"
 
 
 for exp_name in "${exp_names[@]}"; do
     for trial in $(seq 0 $(($NUM_TRIALS - 1))); do
         for data_dir in "$exp_base_dir"/"$exp_name"/*; do
             grammar_name=$(basename "$data_dir")
-            # if [ -f "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"/evaluation/validation.json ]; then
-            #     continue
-            # fi
-            # # echo "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"
+            if [ -f "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"/logs/main.log ]; then
+                continue
+            fi
+            # echo "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"
             # rm -rf "$RESULTS_DIR"/"$data_name"/"$exp_name"/"$model_name"/"$grammar_name"_trial"$trial"
 
             submit_job \
@@ -50,4 +50,6 @@ for exp_name in "${exp_names[@]}"; do
         done
     done
 done
+
+
 

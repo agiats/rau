@@ -13,7 +13,7 @@ set -euo pipefail
 . experiments/include.bash
 
 data_name="PFSA"
-exp_names=("local_entropy_XXX")
+exp_names=("local_entropy_XXX_only")
 # exp_names=("deterministic_shuffles")
 exp_base_dir="$DATA_DIR"/"$data_name"
 examples_per_checkpoint=40000

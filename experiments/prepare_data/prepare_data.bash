@@ -2,7 +2,7 @@ set -euo pipefail
 . experiments/include.bash
 
 data_name="PFSA"
-exp_names=("local_entropy_non_disjoint_larger_m")
+exp_names=("local_entropy_XXX_only")
 # exp_names=("deterministic_shuffles")
 BASE_DIR="$DATA_DIR"/"$data_name"
 mem_per_cpu=16g

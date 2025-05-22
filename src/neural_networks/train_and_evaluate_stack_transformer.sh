@@ -10,10 +10,10 @@ max_tokens_per_batch="$4"
 python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --training-data "$data_dir" \
     --architecture stack-transformer \
-    --d-model 32 \
+    --d-model 768 \
     --num-heads 4 \
-    --feedforward-size 64 \
-    --stack-transformer-layers "2.superposition-32.2" \
+    --feedforward-size 3072 \
+    --stack-transformer-layers "2.superposition-64.2" \
     --dropout 0.1 \
     --init-scale 0.1 \
     --max-epochs 1000 \
@@ -21,7 +21,7 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --optimizer Adam \
     --initial-learning-rate 0.0005 \
     --gradient-clipping-threshold 5 \
-    --early-stopping-patience 10 \
+    --early-stopping-patience 5 \
     --learning-rate-patience 5 \
     --learning-rate-decay-factor 0.5 \
     --examples-per-checkpoint "$examples_per_checkpoint" \

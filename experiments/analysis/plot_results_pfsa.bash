@@ -3,7 +3,7 @@ set -euo pipefail
 
 
 data_name="PFSA"
-exp_names=("local_entropy_non_disjoint_larger_m")
+exp_names=("local_entropy_XXX")
 exp_base_dir="$DATA_DIR"/"$data_name"
 split_names=("test" "validation")
 for split_name in "${split_names[@]}"; do
