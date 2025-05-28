@@ -3,7 +3,7 @@ set -euo pipefail
 
 echo "${ARCHITECTURES[@]}"
 data_name="PFSA"
-exp_names=("local_entropy_XXX")
+exp_names=("local_entropy_non_disjoint_final_fixed_rau")
 # data_name="BLLIP_SM"
 # exp_names=("deterministic_shuffles")
 

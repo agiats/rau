@@ -19,7 +19,7 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --optimizer Adam \
     --initial-learning-rate 0.0005 \
     --gradient-clipping-threshold 5 \
-    --early-stopping-patience 5 \
+    --early-stopping-patience 10 \
     --learning-rate-patience 5 \
     --learning-rate-decay-factor 0.5 \
     --examples-per-checkpoint "$examples_per_checkpoint" \

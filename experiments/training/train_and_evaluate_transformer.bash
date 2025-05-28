@@ -12,14 +12,15 @@ set -euo pipefail
 . experiments/include.bash
 
 data_name="PFSA"
-exp_names=("local_entropy_XXX_only")
+exp_names=("local_entropy_non_disjoint_final_fixed_rau")
 # data_name="babylm2024_10M_fixed"
 # exp_names=("deterministic_shuffles")
 exp_base_dir="$DATA_DIR"/"$data_name"
-examples_per_checkpoint=40000
+examples_per_checkpoint=10000
 max_tokens_per_batch=2048
 time_limit=04:00:00
 # gpu_mem=10g
+
 
 for exp_name in "${exp_names[@]}"; do
     for trial in $(seq 0 $(($NUM_TRIALS - 1))); do
@@ -29,7 +30,7 @@ for exp_name in "${exp_names[@]}"; do
                 continue
             fi
             # echo "$RESULTS_DIR"/"$data_name"/"$exp_name"/transformer/"$grammar_name"_trial"$trial"
-            rm -rf "$RESULTS_DIR"/"$data_name"/"$exp_name"/transformer/"$grammar_name"_trial"$trial"
+            # rm -rf "$RESULTS_DIR"/"$data_name"/"$exp_name"/transformer/"$grammar_name"_trial"$trial"
 
             submit_job \
             train_transformer+"$data_name"+"$exp_name"+"$grammar_name"+trial"$trial" \
