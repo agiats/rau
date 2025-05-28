@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=submit_jobs_lstm
-#SBATCH --output=/cluster/home/tsomeya/projects/lm_inductive_bias/logs/submit_jobs_lstm.out
-#SBATCH --error=/cluster/home/tsomeya/projects/lm_inductive_bias/logs/submit_jobs_lstm.err
+#SBATCH --output=logs/submit_jobs_lstm.out
+#SBATCH --error=logs/submit_jobs_lstm.err
 #SBATCH --time=04:00:00  # Adjust time as needed
 #SBATCH --mem-per-cpu=4G         # Adjust memory as needed
 #SBATCH --tmp=20g
