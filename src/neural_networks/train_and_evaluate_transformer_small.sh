@@ -1,5 +1,4 @@
 set -euo pipefail
-. /cluster/home/tsomeya/projects/lm_inductive_bias/experiments/include.bash
 
 # Get arguments
 data_dir="$1"

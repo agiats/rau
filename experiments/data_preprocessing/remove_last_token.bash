@@ -1,7 +1,7 @@
 # !/bin/bash
 # SBATCH --job-name=remove_last_token
-# SBATCH --output=/cluster/home/tsomeya/projects/lm_inductive_bias/logs/remove_last_token.out
-# SBATCH --error=/cluster/home/tsomeya/projects/lm_inductive_bias/logs/remove_last_token.err
+# SBATCH --output=logs/remove_last_token.out
+# SBATCH --error=logs/remove_last_token.err
 # SBATCH --time=04:00:00  # Adjust time as needed
 # SBATCH --mem-per-cpu=4G         # Adjust memory as needed
 # SBATCH --tmp=20g
