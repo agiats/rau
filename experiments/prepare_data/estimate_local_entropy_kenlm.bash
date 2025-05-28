@@ -2,18 +2,20 @@
 set -euo pipefail
 # . experiments/include.bash
 
-DATA_DIR=/home/agiats/Projects/lm_inductive_bias/data
-data_name="babylm2024_100K_sents"
+DATA_DIR=/Users/agiats/Projects/lm_inductive_bias/data
+data_name="PFSA"
 BASE_DIR="$DATA_DIR"/"$data_name"
-exp_name="deterministic_shuffles"
+exp_name="local_entropy_rebuttal"
 
 for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
     grammar_name=$(basename "$grammar_dir")
 
-    train_file="$grammar_dir/main.tok"
-    valid_file="$grammar_dir/datasets/validation/main.tok"
-    test_file="$grammar_dir/datasets/test/main.tok"
+
+    train_file="$grammar_dir/train.txt"
+    valid_file="$grammar_dir/val.txt"
+    test_file="$grammar_dir/test.txt"
     output_file="$grammar_dir/metadata_kenlm_mlocal_entropy.json"
+
 
     if [[ ! -f "$train_file" || ! -f "$valid_file" || ! -f "$test_file" ]]; then
         echo "Required files not found in $grammar_dir. Skipping..."
@@ -31,4 +33,7 @@ for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
         --method mlocal_entropy \
         --work-dir "work/${data_name}_${exp_name}_${grammar_name}"
 done
+
+
+
 

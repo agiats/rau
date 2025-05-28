@@ -81,7 +81,6 @@ def enumerate_choices(choices):
 
 
 class Parser:
-
     def __init__(self, grammar):
         self.grammar = grammar
         self.transducer_index = TransducerIndex(grammar_to_transducer(grammar))

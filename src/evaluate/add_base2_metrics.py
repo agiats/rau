@@ -8,8 +8,10 @@ def add_base2_metrics(input_path: Path):
     with open(input_path, "r") as f:
         data = json.load(f)
 
-    data['cross_entropy_per_token_base_e'] = data['cross_entropy_per_token']
-    data['cross_entropy_per_token_base_2'] = data['cross_entropy_per_token'] / math.log(2)
+    data["cross_entropy_per_token_base_e"] = data["cross_entropy_per_token"]
+    data["cross_entropy_per_token_base_2"] = data["cross_entropy_per_token"] / math.log(
+        2
+    )
 
     with open(input_path, "w") as f:
         json.dump(data, f)

@@ -11,5 +11,6 @@ def mean_to_stop_prob(mean):
     # To give |X| a mean of m, we can set p = 1 / (m+1).
     return 1 / (mean + 1)
 
+
 def mean_to_continue_prob(mean):
     return 1 - mean_to_stop_prob(mean)

@@ -1,5 +1,4 @@
 class Symbol:
-
     def __init__(self, value):
         super().__init__()
         self.value = value
@@ -8,7 +7,7 @@ class Symbol:
         return str(self.value)
 
     def __repr__(self):
-        return f'Symbol({self.value!r})'
+        return f"Symbol({self.value!r})"
 
     def __eq__(self, other):
         return type(self) == type(other) and self.value == other.value
@@ -32,10 +31,10 @@ class Symbol:
     def is_nonterminal(self):
         raise NotImplementedError
 
-class Terminal(Symbol):
 
+class Terminal(Symbol):
     def __repr__(self):
-        return f'Terminal({self.value!r})'
+        return f"Terminal({self.value!r})"
 
     @property
     def is_terminal(self):
@@ -44,11 +43,11 @@ class Terminal(Symbol):
     @property
     def is_nonterminal(self):
         return False
+
 
 class Nonterminal(Symbol):
-
     def __repr__(self):
-        return f'Nonterminal({self.value!r})'
+        return f"Nonterminal({self.value!r})"
 
     @property
     def is_terminal(self):
@@ -58,16 +57,16 @@ class Nonterminal(Symbol):
     def is_nonterminal(self):
         return True
 
-class Rule:
 
+class Rule:
     def __init__(self, left, right):
         if not isinstance(left, Nonterminal):
-            raise TypeError('left side must be a nonterminal')
+            raise TypeError("left side must be a nonterminal")
         if not isinstance(right, tuple):
             right = tuple(right)
         for x in right:
             if not isinstance(x, Symbol):
-                raise TypeError('right side must be a sequence of symbols')
+                raise TypeError("right side must be a sequence of symbols")
         self.left = left
         self.right = right
 
@@ -97,26 +96,23 @@ class Rule:
         return type(self) == type(other) and self._key() == other._key()
 
     def __str__(self):
-        return '%s -> %s' % (
-            self.left,
-            ' '.join(map(str, self.right))
-        )
+        return "%s -> %s" % (self.left, " ".join(map(str, self.right)))
 
     def __repr__(self):
-        return 'Rule(%r, %r)' % (self.left, self.right)
+        return "Rule(%r, %r)" % (self.left, self.right)
+
 
 class Grammar:
-
     rule_type = Rule
 
     def __init__(self, start, rules):
         if not isinstance(start, Nonterminal):
-            raise TypeError('start symbol must be a nonterminal')
+            raise TypeError("start symbol must be a nonterminal")
         if not isinstance(rules, list):
             rules = list(rules)
         for rule in rules:
             if not isinstance(rule, self.rule_type):
-                raise TypeError('rules must be instances of %s' % self.rule_type)
+                raise TypeError("rules must be instances of %s" % self.rule_type)
         terminals = set()
         nonterminals = set()
         for rule in rules:
@@ -137,7 +133,7 @@ class Grammar:
         return any(r.is_unary for r in self.rules)
 
     def __str__(self):
-        return '\n'.join(map(str, self.rules))
+        return "\n".join(map(str, self.rules))
 
     def __repr__(self):
-        return 'Grammar(%r, %r)' % (self.start, self.rules)
+        return "Grammar(%r, %r)" % (self.start, self.rules)

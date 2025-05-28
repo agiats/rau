@@ -685,25 +685,15 @@ def main():
         plt.close(fig)
 
     # Create and save XXX vs cross entropy plots
-    for i, fig in enumerate(
-        plot_XXX_vs_cross_entropy(df, architecture_map)
-    ):
+    for i, fig in enumerate(plot_XXX_vs_cross_entropy(df, architecture_map)):
         arch = list(df["architecture"].unique())[i]
-        fig.savefig(
-            output_dir
-            / f"XXX_vs_cross_entropy_{arch}_{args.split_name}.png"
-        )
+        fig.savefig(output_dir / f"XXX_vs_cross_entropy_{arch}_{args.split_name}.png")
         plt.close(fig)
 
     # Create and save XXX vs KL divergence plots
-    for i, fig in enumerate(
-        plot_XXX_vs_kl_divergence(df, architecture_map)
-    ):
+    for i, fig in enumerate(plot_XXX_vs_kl_divergence(df, architecture_map)):
         arch = list(df["architecture"].unique())[i]
-        fig.savefig(
-            output_dir
-            / f"XXX_vs_KL_divergence_{arch}_{args.split_name}.png"
-        )
+        fig.savefig(output_dir / f"XXX_vs_KL_divergence_{arch}_{args.split_name}.png")
         plt.close(fig)
 
     plt.close("all")

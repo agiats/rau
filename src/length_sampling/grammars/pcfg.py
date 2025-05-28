@@ -5,7 +5,6 @@ from ..util import group_by
 
 
 class Rule(Rule):
-
     def __init__(self, left, right, probability=1.0):
         super().__init__(left, right)
         if probability < 0:
@@ -27,7 +26,6 @@ class Rule(Rule):
 
 
 class Grammar(Grammar):
-
     rule_type = Rule
 
     def __init__(self, start, rules, normalize=True):

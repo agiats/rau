@@ -63,7 +63,6 @@ def eos_ngram_pipeline(n, text, add_bos):
 
 
 def padded_everygram_pipeline(order, text, add_bos):
-
     if add_bos:
         padding_fn = partial(pad_both_ends, n=order)
     else:

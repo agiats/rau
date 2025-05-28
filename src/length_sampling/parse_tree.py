@@ -2,7 +2,6 @@ from .util import product
 
 
 class Tree:
-
     def __init__(self, value, children=None):
         if children is None:
             children = ()
@@ -43,7 +42,6 @@ class Tree:
 
 
 class ParseTree(Tree):
-
     def __init__(self, symbol, children=None, rule=None):
         super().__init__(symbol, children)
         if symbol.is_terminal:

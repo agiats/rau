@@ -35,7 +35,6 @@ def collect_results(
             metadata_path = Path(data_dir) / exp_name / grammar_name / metadata_filename
 
             try:
-
                 with open(test_path) as f:
                     test_results = json.load(f)
 
@@ -68,9 +67,7 @@ def collect_results(
                         if "next_symbol_entropy" in metadata
                         else None
                     ),
-                    "XXX": (
-                        metadata["XXX"] if "XXX" in metadata else None
-                    ),
+                    "XXX": (metadata["XXX"] if "XXX" in metadata else None),
                 }
 
                 # Add local entropy values dynamically
@@ -156,7 +153,13 @@ def collect_results(
             "cross_entropy_per_token_base_2",
         ]
 
-        columns = base_columns + local_entropy_columns + prefix_local_entropy_columns + time_indexed_mi_columns + metric_columns
+        columns = (
+            base_columns
+            + local_entropy_columns
+            + prefix_local_entropy_columns
+            + time_indexed_mi_columns
+            + metric_columns
+        )
         df = df[columns]
         df.to_csv(output_path, index=False)
         print(f"Results saved to {output_path}")

@@ -4,7 +4,6 @@ from .util import mean_to_continue_prob
 
 
 class DyckGrammar(Grammar):
-
     S = Nonterminal("S")
     T = Nonterminal("T")
 

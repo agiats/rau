@@ -42,6 +42,7 @@ import copy
 #         children_reversed += c
 #     return children_reversed + sentence_part[children_end:]
 
+
 def remove_bracketing(s):
     new_s = []
     split_s = s.split(" ")
@@ -56,26 +57,31 @@ def remove_bracketing(s):
             i += 1
     # new_s.append(".") #TODO: EOS?
     # new_s.append("[eos]")
-    return ' '.join(new_s)
+    return " ".join(new_s)
+
 
 def generate_sentence_file(sentences, output_file):
-    output_f = open(output_file, 'w')
+    output_f = open(output_file, "w")
     for s in sentences:
         output_f.write(remove_bracketing(s.strip("\n")) + "\n")
     output_f.close()
 
-parser = argparse.ArgumentParser(description="Generate variants of sentences"
-    " based on base grammar")
 
-parser.add_argument("-s", "--sentence_file", type=str, required=True,
-    help="Path to base sentence file")
+parser = argparse.ArgumentParser(
+    description="Generate variants of sentences based on base grammar"
+)
 
-parser.add_argument("-O", "--output_file", type=str, required=True,
-    help="Location of output folder")
+parser.add_argument(
+    "-s", "--sentence_file", type=str, required=True, help="Path to base sentence file"
+)
+
+parser.add_argument(
+    "-O", "--output_file", type=str, required=True, help="Location of output folder"
+)
 
 args = parser.parse_args()
 
-file = open(args.sentence_file, 'r')
+file = open(args.sentence_file, "r")
 sentences = file.readlines()
 
 generate_sentence_file(sentences, args.output_file)

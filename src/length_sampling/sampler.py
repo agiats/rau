@@ -12,7 +12,6 @@ from .lower_bound_perplexity import string_log_probability
 
 
 class Sampler:
-
     def valid_lengths(self, min_length, max_length):
         raise NotImplementedError
 
@@ -24,7 +23,6 @@ class Sampler:
 
 
 class PCFGSampler(Sampler):
-
     def __init__(self, sampler):
         super().__init__()
         self.sampler = sampler
@@ -52,7 +50,6 @@ class PCFGSampler(Sampler):
 
 
 class UniformSampler(Sampler):
-
     def valid_lengths(self, min_length, max_length):
         return [l for l in range(min_length, max_length + 1) if self.is_valid_length(l)]
 
@@ -70,7 +67,6 @@ class UniformSampler(Sampler):
 
 
 class LengthSampler:
-
     def __init__(self, grammar):
         if grammar.has_epsilon_rules or grammar.has_unary_rules:
             raise ValueError("grammar may not contain epsilon rules or unary rules")

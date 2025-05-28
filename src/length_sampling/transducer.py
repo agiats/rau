@@ -61,7 +61,6 @@ class TransducerIndex:
 
 
 class StackBottomType:
-
     def __str__(self):
         return "$"
 
@@ -73,7 +72,6 @@ STACK_BOTTOM = StackBottomType()
 
 
 class StartSymbolType:
-
     def __str__(self):
         return "S"
 

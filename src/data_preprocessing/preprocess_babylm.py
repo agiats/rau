@@ -113,9 +113,10 @@ def process_text_file(input_file, output_file, nlp, min_length=5):
     is_childes = "childes" in input_path
     is_switchboard = "switchboard" in input_path
 
-    with open(input_file, "r", encoding="utf-8") as f_in, open(
-        output_file, "w", encoding="utf-8"
-    ) as f_out:
+    with (
+        open(input_file, "r", encoding="utf-8") as f_in,
+        open(output_file, "w", encoding="utf-8") as f_out,
+    ):
         for line in f_in:
             if is_childes:
                 line = preprocess_childes_line(line)

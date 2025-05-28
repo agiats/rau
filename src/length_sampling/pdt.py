@@ -1,5 +1,4 @@
 class EpsilonType:
-
     def __str__(self):
         return "ε"
 
@@ -11,7 +10,6 @@ EPSILON = EpsilonType()
 
 
 class Transducer:
-
     def __init__(self, start_state, transitions, accept_states):
         if not isinstance(transitions, list):
             transitions = list(transitions)
@@ -51,7 +49,6 @@ transitions:
 
 
 class Transition:
-
     def __init__(
         self,
         state_from,
