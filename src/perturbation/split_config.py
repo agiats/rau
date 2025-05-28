@@ -6,7 +6,7 @@ from pathlib import Path
 
 def split_config(config_file: str, output_dir: str, n_splits: int):
     # 設定ファイルを読み込む
-    with open(config_file, "r") as f:
+    with open(Path(config_file).resolve(), "r") as f:
         config = json.load(f)
 
     # 設定を分割
