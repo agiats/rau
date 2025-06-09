@@ -37,6 +37,22 @@ def save_dataset(
     print("Saved the datasets.")
 
 
+def calculate_predictive_information(local_entropies: dict, asymptotic_entropy: float) -> float:
+    """
+    Calculate predictive information E = sum_{n=2}^{max_n} (h_n - h_asymptotic)
+
+    Args:
+        local_entropies: Dictionary mapping m to local_entropy(m) values
+        asymptotic_entropy: The asymptotic entropy rate to use
+
+    Returns:
+        E: Predictive information
+    """
+    # Sum (h_n - h_asymptotic) for all available n values
+    E = sum(h_n - asymptotic_entropy for h_n in local_entropies.values())
+    return E
+
+
 def save_metadata(
     A: PFSA,
     data_dir: str,
@@ -49,7 +65,29 @@ def save_metadata(
     topology_seed: int,
     weight_seed: int,
 ) -> None:
+    """
+    Save metadata including predictive information calculations.
+
+    Predictive information is calculated in two ways:
+    1. predictive_information_empirical: Using the empirical asymptotic rate (last local_entropy value)
+    2. predictive_information_stationary: Using next_symbol_entropy as the asymptotic rate
+
+    Note: local_entropy uses infix probabilities, so the empirical approach is more consistent
+    with how the n-gram entropies are calculated.
+    """
     model_path = os.path.join(data_dir, "model.pickle")
+
+    # Calculate local entropies
+    local_entropies = {m: float(A.local_entropy(m)) for m in range(2, m_max + 1)}
+    next_symbol_entropy = float(A.next_symbol_entropy)
+
+    # Calculate predictive information using two different asymptotic rates
+    # 1. Using the empirical convergence value (last local_entropy)
+    h_asymptotic_empirical = list(local_entropies.values())[-1]
+    E_empirical = calculate_predictive_information(local_entropies, h_asymptotic_empirical)
+
+    # 2. Using next_symbol_entropy (stationary entropy rate)
+    E_stationary = calculate_predictive_information(local_entropies, next_symbol_entropy)
 
     metadata = {
         "fname": model_path,
@@ -63,10 +101,11 @@ def save_metadata(
         "mean_length": float(A.mean_length),
         "entropy": float(A.entropy),
         "XXX": float(A.XXX()),
-        "next_symbol_entropy": float(A.next_symbol_entropy),
-        "local_entropy": {m: float(A.local_entropy(m)) for m in range(2, m_max + 1)},
-        "prefix_local_entropy": {m: float(A.prefix_local_entropy(m)) for m in range(2, m_max + 1)},
-        "time_indexed_MI": {t: float(A.MI(t)) for t in range(1, m_max + 1)},
+        "next_symbol_entropy": next_symbol_entropy,
+        "local_entropy": local_entropies,
+        "predictive_information_empirical": E_empirical,
+        "predictive_information_stationary": E_stationary,
+        "h_asymptotic_empirical": h_asymptotic_empirical,
     }
 
     json.dump(metadata, open(os.path.join(data_dir, "metadata.json"), "w"))
@@ -144,7 +183,7 @@ def get_data(
     return D_train, D_val, D_test
 
 
-@hydra.main(version_base=None, config_path="../config", config_name="pfsa_config.yaml")
+@hydra.main(version_base=None, config_path="../../config", config_name="pfsa_config.yaml")
 def generate_dataset(cfg: DictConfig):
 
     n_states = cfg.n_states

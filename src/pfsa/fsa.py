@@ -1,3 +1,4 @@
+
 import json
 import pickle
 from collections import defaultdict
@@ -218,61 +219,62 @@ class PFSA:
 
         return sum(Hs) / sum(infix_probabilities)
 
-    def prefix_local_entropy(self, m: int) -> float:
-        """Computes the prefix m-local entropy of the PFSA.
 
-        Calculates H[Y_{≥t} | Y_{<t}] where t = m, which is the entropy of all future
-        strings given prefixes of length m-1.
+    # def prefix_local_entropy(self, m: int) -> float:
+    #     """Computes the prefix m-local entropy of the PFSA.
 
-        Args:
-            m (int): The order m of the entropy.
+    #     Calculates H[Y_{≥t} | Y_{<t}] where t = m, which is the entropy of all future
+    #     strings given prefixes of length m-1.
 
-        Returns:
-            float: The prefix m-local entropy of the PFSA.
-        """
-        Hs = []
-        prefix_probabilities = []
+    #     Args:
+    #         m (int): The order m of the entropy.
 
-        for c in tqdm(
-            product(range(self.n_symbols), repeat=m - 1),
-            total=self.n_symbols ** (m - 1),
-            desc=f"Computing prefix {m}-local entropy",
-        ):
-            prefix_probability = self.normalized_prefix_probability(c)
-            if prefix_probability < 1e-6:  # Skip negligible prefixes
-                continue
+    #     Returns:
+    #         float: The prefix m-local entropy of the PFSA.
+    #     """
+    #     Hs = []
+    #     prefix_probabilities = []
 
-            # Get state distribution after reading prefix c
-            state_dist = self.state_distribution(c)
+    #     for c in tqdm(
+    #         product(range(self.n_symbols), repeat=m - 1),
+    #         total=self.n_symbols ** (m - 1),
+    #         desc=f"Computing prefix {m}-local entropy",
+    #     ):
+    #         prefix_probability = self.normalized_prefix_probability(c)
+    #         if prefix_probability < 1e-6:  # Skip negligible prefixes
+    #             continue
 
-            # Calculate entropy of future strings from this state distribution
-            # For each state q, consider it as if it were the only initial state
-            state_entropies = np.zeros(self.n_states)
-            for q in range(self.n_states):
-                if state_dist[q] < 1e-6:
-                    continue
+    #         # Get state distribution after reading prefix c
+    #         state_dist = self.state_distribution(c)
 
-                # Create a PFSA with only state q as initial state
-                q_initial = np.zeros(self.n_states)
-                q_initial[q] = 1.0
+    #         # Calculate entropy of future strings from this state distribution
+    #         # For each state q, consider it as if it were the only initial state
+    #         state_entropies = np.zeros(self.n_states)
+    #         for q in range(self.n_states):
+    #             if state_dist[q] < 1e-6:
+    #                 continue
 
-                # Use a temporary modified PFSA to calculate entropy
-                tmp_lambda = self.λ.copy()
-                self.λ = q_initial
+    #             # Create a PFSA with only state q as initial state
+    #             q_initial = np.zeros(self.n_states)
+    #             q_initial[q] = 1.0
 
-                # Calculate entropy from this state
-                state_entropies[q] = self.entropy
+    #             # Use a temporary modified PFSA to calculate entropy
+    #             tmp_lambda = self.λ.copy()
+    #             self.λ = q_initial
 
-                # Restore original lambda
-                self.λ = tmp_lambda
+    #             # Calculate entropy from this state
+    #             state_entropies[q] = self.entropy
 
-            # Weighted sum of entropies by state distribution
-            conditional_H = np.sum(state_dist * state_entropies)
+    #             # Restore original lambda
+    #             self.λ = tmp_lambda
 
-            Hs.append(prefix_probability * conditional_H)
-            prefix_probabilities.append(prefix_probability)
+    #         # Weighted sum of entropies by state distribution
+    #         conditional_H = np.sum(state_dist * state_entropies)
 
-        return sum(Hs) / sum(prefix_probabilities)
+    #         Hs.append(prefix_probability * conditional_H)
+    #         prefix_probabilities.append(prefix_probability)
+
+    #     return sum(Hs) / sum(prefix_probabilities)
 
     @property
     def limit_state_distribution(self) -> np.ndarray:

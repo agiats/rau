@@ -1,4 +1,4 @@
-from fsa import PFSA
+from src.pfsa.fsa import PFSA
 
 
 class NGram(PFSA):

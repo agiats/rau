@@ -3,8 +3,8 @@ from typing import Callable, Dict, Optional, Sequence, Tuple
 
 import numpy as np
 
-from fsa import PFSA
-from ngram import NGram
+from src.pfsa.fsa import PFSA
+from src.pfsa.ngram import NGram
 
 
 def random_pfsa(n_states: int, n_symbols: int, seed: int) -> PFSA:
