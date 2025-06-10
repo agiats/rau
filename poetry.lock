@@ -928,6 +928,17 @@ docs = ["intersphinx-registry", "myst-parser", "pydata-sphinx-theme", "sphinx-au
 test = ["ipykernel", "pre-commit", "pytest (<9)", "pytest-cov", "pytest-timeout"]
 
 [[package]]
+name = "kenlm"
+version = "0.3.0"
+description = ""
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "kenlm-0.3.0.tar.gz", hash = "sha256:c4628bb9fb63c8a6f9240035b8b037385cfc404cb72e933cf48878291edac1e8"},
+]
+
+[[package]]
 name = "kiwisolver"
 version = "1.4.8"
 description = "A fast implementation of the Cassowary constraint solver"
@@ -3545,4 +3556,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "348004389249d372aa327b78e765785b2cbbacfea451117f419806ead6e47199"
+content-hash = "ae88f2623c283928cdf60641a3d6cb7454ab6810364f3966f6427d4f27ce184a"
