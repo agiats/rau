@@ -5,6 +5,7 @@ set -euo pipefail
 DATA_DIR=/Users/agiats/Projects/lm_inductive_bias/data
 data_name="PCFG"
 BASE_DIR="$DATA_DIR"/"$data_name"
+KENLM_PATH=/Users/agiats/development/kenlm
 exp_name="6switches_deterministic"
 
 for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
@@ -20,8 +21,9 @@ for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
     python src/predictive_information/estimate_predictive_information.py \
         --input_path "$strings_file" \
         --output_path "$output_file" \
+        --kenlm-path $KENLM_PATH \
         --min_n 2 \
-        --max_n 8 \
+        --max_n 6 \
         --memory 8G \
         --num-processes 1 \
         --convergence-tol 1e-4 \
