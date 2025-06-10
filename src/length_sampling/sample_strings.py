@@ -8,7 +8,6 @@ import argparse
 import concurrent.futures
 from pathlib import Path
 from tqdm import tqdm
-import gzip
 
 
 def sample_batch(sampler, generator_class, valid_lengths, batch_size, seed):
@@ -105,7 +104,7 @@ def main():
     args.output_path.parent.mkdir(parents=True, exist_ok=True)
 
     print(f"Writing {len(samples)} sentences to {args.output_path}...")
-    with gzip.open(args.output_path, "wt", encoding="utf-8") as f:
+    with open(args.output_path, "w", encoding="utf-8") as f:
         for sample in samples:
             f.write(" ".join(sample) + "\n")
     # Save valid lengths
