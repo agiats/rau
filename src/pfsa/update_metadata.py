@@ -61,7 +61,7 @@ def calculate_pfsa_metadata(
         E_empirical = calculate_predictive_information(local_entropies, h_asymptotic_empirical)
 
         # 2. Using next_symbol_entropy (stationary entropy rate)
-        E_stationary = calculate_predictive_information(local_entropies, metadata['next_symbol_entropy'])
+        E_stationary = calculate_predictive_information(local_entropies, existing['next_symbol_entropy'])
 
         metadata['predictive_information_empirical'] = E_empirical
         metadata['predictive_information_stationary'] = E_stationary
