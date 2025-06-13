@@ -9,8 +9,8 @@ max_tokens_per_batch="$4"
 python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --training-data "$data_dir" \
     --architecture lstm \
-    --num-layers 1 \
-    --hidden-units 512 \
+    --num-layers 3 \
+    --hidden-units 64 \
     --dropout 0.1 \
     --init-scale 0.1 \
     --max-epochs 1000 \

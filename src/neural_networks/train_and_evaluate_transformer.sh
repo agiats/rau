@@ -9,10 +9,10 @@ max_tokens_per_batch="$4"
 python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
     --training-data "$data_dir" \
     --architecture transformer \
-    --num-layers 4 \
-    --d-model 768 \
-    --num-heads 12 \
-    --feedforward-size 3072 \
+    --num-layers 3 \
+    --d-model 56 \
+    --num-heads 4 \
+    --feedforward-size 224 \
     --dropout 0.1 \
     --init-scale 0.1 \
     --max-epochs 1000 \
