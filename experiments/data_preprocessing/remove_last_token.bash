@@ -11,7 +11,7 @@ set -euo pipefail
 . experiments/include.bash
 
 data_name="PFSA"
-exp_names=("local_entropy_XXX_only")
+exp_names=("local_entropy_predictive_information")
 BASE_DIR="$DATA_DIR"/"$data_name"
 
 for exp_name in "${exp_names[@]}"; do

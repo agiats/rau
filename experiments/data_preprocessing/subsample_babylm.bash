@@ -13,7 +13,6 @@ for target in "${targets[@]}"; do
     src_path="$src_dir"/"$target"
 
 
-    # ファイルタイプに応じてサンプルサイズを設定
     if [[ "$target" == "main.tok" ]]; then
         sample_size=$train_sample_size
         dst_path="$dst_dir"/train.txt

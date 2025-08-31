@@ -6,13 +6,13 @@ output_dir="$2"
 examples_per_checkpoint="$3"
 max_tokens_per_batch="$4"
 
-python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
+python rau/src/rau/tasks/language_modeling/train.py \
     --training-data "$data_dir" \
     --architecture stack-transformer \
-    --d-model 20 \
+    --d-model 56 \
     --num-heads 4 \
-    --feedforward-size 80 \
-    --stack-transformer-layers "2.superposition-16.2" \
+    --feedforward-size 192 \
+    --stack-transformer-layers "1.superposition-16.1" \
     --dropout 0.1 \
     --init-scale 0.1 \
     --max-epochs 1000 \
@@ -29,13 +29,13 @@ python "$RAU_DIR"/src/rau/tasks/language_modeling/train.py \
 eval_dir="$output_dir"/evaluation
 mkdir -p "$eval_dir"
 
-python "$RAU_DIR"/src/rau/tasks/language_modeling/evaluate.py \
+python rau/src/rau/tasks/language_modeling/evaluate.py \
     --load-model "$output_dir" \
     --training-data "$data_dir" \
     --input test \
     --batching-max-tokens 2048 > "$eval_dir"/test.json
 
-python "$RAU_DIR"/src/rau/tasks/language_modeling/evaluate.py \
+python rau/src/rau/tasks/language_modeling/evaluate.py \
     --load-model "$output_dir" \
     --training-data "$data_dir" \
     --input validation \

@@ -29,5 +29,6 @@ singularity exec \
   "${singularity_flags[@]}" \
   --bind "$HOME"/.cache \
   --bind "$HOME"/.ssh \
+  --bind /cluster/work/cotterell/tsomeya \
   "$SINGULARITY_IMAGE_FILE" \
   "$@"

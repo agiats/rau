@@ -9,7 +9,7 @@ set -euo pipefail
 # N_WEIGHT_SEEDS=1
 
 data_name="PFSA"
-exp_name="local_entropy_XXX"
+exp_name="local_entropy_predictive_information"
 output_dir="$DATA_DIR/$data_name/$exp_name"
 mem_per_cpu=16g
 

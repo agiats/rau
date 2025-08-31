@@ -68,6 +68,21 @@ def collect_results(
                         else None
                     ),
                     "XXX": (metadata["XXX"] if "XXX" in metadata else None),
+                    "predictive_information_empirical": (
+                        metadata["predictive_information_empirical"]
+                        if "predictive_information_empirical" in metadata
+                        else None
+                    ),
+                    "predictive_information_stationary": (
+                        metadata["predictive_information_stationary"]
+                        if "predictive_information_stationary" in metadata
+                        else None
+                    ),
+                    "h_asymptotic_empirical": (
+                        metadata["h_asymptotic_empirical"]
+                        if "h_asymptotic_empirical" in metadata
+                        else None
+                    ),
                 }
 
                 # Add local entropy values dynamically
@@ -125,26 +140,33 @@ def collect_results(
             "mean_length",
             "entropy",
             "next_symbol_entropy",
-            "XXX",
         ]
+        # Add optional columns if they exist in the dataframe
+        optional_columns = [
+            "XXX",
+            "predictive_information_empirical",
+            "predictive_information_stationary",
+            "h_asymptotic_empirical"
+        ]
+        base_columns.extend([col for col in optional_columns if col in df.columns])
 
-        # Add local entropy columns in order
+        # Add local entropy columns in order if they exist
         local_entropy_columns = sorted(
             [col for col in df.columns if col.endswith("_local_entropy")],
             key=lambda x: int(x.split("_")[0]),
-        )
+        ) if any(col.endswith("_local_entropy") for col in df.columns) else []
 
-        # Add prefix_local_entropy columns in order
+        # Add prefix_local_entropy columns in order if they exist
         prefix_local_entropy_columns = sorted(
             [col for col in df.columns if col.endswith("_prefix_local_entropy")],
             key=lambda x: int(x.split("_")[0]),
-        )
+        ) if any(col.endswith("_prefix_local_entropy") for col in df.columns) else []
 
-        # Add time_indexed_MI columns in order
+        # Add time_indexed_MI columns in order if they exist
         time_indexed_mi_columns = sorted(
             [col for col in df.columns if col.endswith("_time_indexed_MI")],
             key=lambda x: int(x.split("_")[0]),
-        )
+        ) if any(col.endswith("_time_indexed_MI") for col in df.columns) else []
 
         metric_columns = [
             "cross_entropy_per_token",

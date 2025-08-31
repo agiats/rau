@@ -3,7 +3,7 @@ set -euo pipefail
 
 echo "${ARCHITECTURES[@]}"
 data_name="PFSA"
-exp_names=("local_entropy_non_disjoint_final_fixed_rau")
+exp_name="predictive_information"
 # data_name="BLLIP_SM"
 # exp_names=("deterministic_shuffles")
 
@@ -17,26 +17,24 @@ if [ "$data_name" == "PFSA" ]; then
 fi
 
 for split_name in "${split_names[@]}"; do
-    for exp_name in "${exp_names[@]}"; do
-        if [ "$data_name" == "PFSA" ]; then
-            OUTPUT_PATH="${RESULTS_DIR}"/"$data_name"/"$exp_name"/collected_results_"$split_name".csv
-        else
-            OUTPUT_PATH="${RESULTS_DIR}"/"$data_name"/"$exp_name"/collected_results_"$ngram_method"_"$split_name".csv
-        fi
+    if [ "$data_name" == "PFSA" ]; then
+        OUTPUT_PATH="${RESULTS_DIR}"/"$data_name"/"$exp_name"/collected_results_"$split_name".csv
+    else
+        OUTPUT_PATH="${RESULTS_DIR}"/"$data_name"/"$exp_name"/collected_results_"$ngram_method"_"$split_name".csv
+    fi
 
 
-        # submit_job \
-        #     collect_result+"$data_name"+"$exp_name"+"$split_name" \
-        #     cpu \
-        #     --time=4:00:00 \
-        #     -- \
-            python src/analysis/collect_results.py \
-            --data_dir "$exp_base_dir" \
-            --result_base_dir "$RESULTS_DIR"/"$data_name" \
-            --exp_name "$exp_name" \
-            --architectures "${ARCHITECTURES[@]}" \
-            --split_name "$split_name" \
-            --output_path "$OUTPUT_PATH" \
-            --metadata_filename "$metadata_filename"
-    done
+    # submit_job \
+    #     collect_result+"$data_name"+"$exp_name"+"$split_name" \
+    #     cpu \
+    #     --time=4:00:00 \
+    #     -- \
+        python src/analysis/collect_results.py \
+        --data_dir "$exp_base_dir" \
+        --result_base_dir "$RESULTS_DIR"/"$data_name" \
+        --exp_name "$exp_name" \
+        --architectures "${ARCHITECTURES[@]}" \
+        --split_name "$split_name" \
+        --output_path "$OUTPUT_PATH" \
+        --metadata_filename "$metadata_filename"
 done
