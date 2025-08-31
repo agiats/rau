@@ -6,7 +6,7 @@ DATA_DIR=/Users/agiats/Projects/lm_inductive_bias/data
 data_name="PCFG"
 BASE_DIR="$DATA_DIR"/"$data_name"
 KENLM_PATH=/Users/agiats/development/kenlm
-exp_name="6switches_deterministic"
+exp_name="6switches_deterministic_zipf"
 
 for grammar_dir in "$BASE_DIR"/"$exp_name"/*; do
     grammar_name=$(basename "$grammar_dir")
